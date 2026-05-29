@@ -1,0 +1,52 @@
+import { motion } from "motion/react";
+import {
+  Calendar, BarChart3, Radar, Bot, Globe2, Zap, Users, Sparkles,
+} from "lucide-react";
+
+const features = [
+  { icon: Globe2, title: "Multi-platform publishing", desc: "Instagram, LinkedIn, X, YouTube, Facebook — one composer, one click." },
+  { icon: Calendar, title: "Smart scheduler", desc: "Drag-and-drop calendar, queues, bulk uploads, timezone-aware publishing." },
+  { icon: Radar, title: "AI Trend Radar", desc: "Discover viral topics, hashtags and competitor moves before they peak." },
+  { icon: BarChart3, title: "Unified analytics", desc: "Cross-platform engagement, growth and CTR with AI optimization tips." },
+  { icon: Bot, title: "Autonomous AI agents", desc: "Brand-voice writers, designers and schedulers that work while you sleep." },
+  { icon: Zap, title: "n8n automations", desc: "Connect Zapier, n8n & webhooks. Build workflows without code." },
+  { icon: Users, title: "Agency workspaces", desc: "Multi-brand, multi-client, white-label dashboards with role controls." },
+  { icon: Sparkles, title: "Virality score", desc: "AI predicts post performance and recommends best time to publish." },
+];
+
+export function Features() {
+  return (
+    <section id="features" className="relative py-28">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="max-w-2xl">
+          <p className="text-sm text-primary font-medium">Everything you need</p>
+          <h2 className="mt-3 text-4xl md:text-5xl font-semibold tracking-tight">
+            One platform. <span className="text-gradient">Every workflow.</span>
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            Stop juggling 7 tools. Nexora AI replaces your scheduler, analytics suite, trend tracker and copywriter — with intelligent agents that learn your brand.
+          </p>
+        </div>
+
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {features.map((f, i) => (
+            <motion.div
+              key={f.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: i * 0.05 }}
+              className="glass rounded-2xl p-6 group hover:border-primary/40 transition-all hover:-translate-y-1"
+            >
+              <div className="size-11 rounded-xl bg-gradient-brand grid place-items-center mb-4 group-hover:glow transition-shadow">
+                <f.icon className="size-5 text-white" />
+              </div>
+              <h3 className="font-semibold">{f.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

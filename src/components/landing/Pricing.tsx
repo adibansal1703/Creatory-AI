@@ -9,13 +9,13 @@ const plans = [
     cta: "Start free",
   },
   {
-    name: "Creator", price: "₹1,499", period: "/mo", popular: true,
+    name: "Creator", price: "₹200", period: "/mo", popular: true,
     desc: "For solo creators ready to scale.",
     features: ["10 social accounts", "Unlimited scheduling", "10,000 AI credits", "Trend Radar", "Full analytics", "Brand voice memory"],
     cta: "Get Creator",
   },
   {
-    name: "Agency", price: "₹4,999", period: "/mo",
+    name: "Agency", price: "₹500", period: "/mo",
     desc: "Multi-brand workspaces & white-label.",
     features: ["Unlimited accounts", "Unlimited posts", "50,000 AI credits", "Client workspaces", "White-label", "Priority support"],
     cta: "Get Agency",

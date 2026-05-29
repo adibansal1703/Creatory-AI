@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import dashboardImg from "@/assets/dashboard-hero.jpg";
 
@@ -10,21 +10,11 @@ export function Hero() {
       <div className="absolute inset-0 grid-bg [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)] pointer-events-none" />
 
       <div className="relative mx-auto max-w-6xl px-4 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-xs text-muted-foreground"
-        >
-          <Sparkles className="size-3.5 text-primary" />
-          Introducing Nexora AI 2.0 — Autonomous content agents
-        </motion.div>
-
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.05 }}
-          className="mt-6 text-5xl md:text-7xl font-semibold tracking-tight leading-[1.05]"
+          className="text-5xl md:text-7xl font-semibold tracking-tight leading-[1.05]"
         >
           Your AI Content Team.<br />
           <span className="text-gradient">Create once. Publish everywhere.</span>
@@ -75,17 +65,6 @@ export function Hero() {
             />
           </div>
         </motion.div>
-
-        <div className="mt-16">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-6">
-            Powering content teams at 4,200+ brands
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 opacity-60">
-            {["NEXLAB", "PIXELFORGE", "ORBITAL", "LUMEN.CO", "ARCANE", "VANTAGE"].map((b) => (
-              <span key={b} className="text-sm font-semibold tracking-widest">{b}</span>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   );

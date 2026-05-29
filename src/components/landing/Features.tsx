@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import {
-  Calendar, BarChart3, Radar, Bot, Globe2, Zap, Users, Sparkles,
+  Calendar, BarChart3, Radar, Bot, Globe2, Sparkles,
 } from "lucide-react";
 
 const features = [
@@ -9,8 +9,6 @@ const features = [
   { icon: Radar, title: "AI Trend Radar", desc: "Discover viral topics, hashtags and competitor moves before they peak." },
   { icon: BarChart3, title: "Unified analytics", desc: "Cross-platform engagement, growth and CTR with AI optimization tips." },
   { icon: Bot, title: "Autonomous AI agents", desc: "Brand-voice writers, designers and schedulers that work while you sleep." },
-  { icon: Zap, title: "n8n automations", desc: "Connect Zapier, n8n & webhooks. Build workflows without code." },
-  { icon: Users, title: "Agency workspaces", desc: "Multi-brand, multi-client, white-label dashboards with role controls." },
   { icon: Sparkles, title: "Virality score", desc: "AI predicts post performance and recommends best time to publish." },
 ];
 

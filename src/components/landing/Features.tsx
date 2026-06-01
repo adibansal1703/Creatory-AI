@@ -1,15 +1,9 @@
 import { motion } from "motion/react";
-import {
-  Calendar, BarChart3, Radar, Bot, Globe2, Sparkles,
-} from "lucide-react";
+import { Calendar, Globe2 } from "lucide-react";
 
 const features = [
   { icon: Globe2, title: "Multi-platform publishing", desc: "Instagram, LinkedIn, X, YouTube, Facebook — one composer, one click." },
   { icon: Calendar, title: "Smart scheduler", desc: "Drag-and-drop calendar, queues, bulk uploads, timezone-aware publishing." },
-  { icon: Radar, title: "AI Trend Radar", desc: "Discover viral topics, hashtags and competitor moves before they peak." },
-  { icon: BarChart3, title: "Unified analytics", desc: "Cross-platform engagement, growth and CTR with AI optimization tips." },
-  { icon: Bot, title: "Autonomous AI agents", desc: "Brand-voice writers, designers and schedulers that work while you sleep." },
-  { icon: Sparkles, title: "Virality score", desc: "AI predicts post performance and recommends best time to publish." },
 ];
 
 export function Features() {
@@ -26,7 +20,7 @@ export function Features() {
           </p>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
           {features.map((f, i) => (
             <motion.div
               key={f.title}

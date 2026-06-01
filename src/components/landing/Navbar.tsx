@@ -1,25 +1,69 @@
 import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { UserAccountMenu } from "@/components/layout/UserAccountMenu";
+import { useUserProfile } from "@/hooks/use-user-profile";
+import { cn } from "@/lib/utils";
 import logo from "@/assets/nexora-logo.png";
 
 export function Navbar() {
+  const { isAuthenticated, loading } = useUserProfile();
+
   return (
-    <header className="fixed top-0 inset-x-0 z-50">
-      <div className="mx-auto mt-4 max-w-6xl px-4">
-        <nav className="glass rounded-2xl flex items-center justify-between px-5 py-3">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Nexora AI" className="h-8 w-auto" />
+    <header className="fixed top-0 inset-x-0 z-50 pointer-events-none">
+      <div className="mx-auto mt-4 max-w-6xl px-4 pointer-events-auto">
+        <nav className="glass rounded-2xl flex items-center justify-between px-5 py-3 relative gap-3">
+          <Link to="/" className="flex items-center gap-2 shrink-0 relative z-10">
+            <img src={logo} alt="Nexora AI" className="h-9 w-auto" />
           </Link>
-          <div className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
-            <a href="#features" className="hover:text-foreground transition">Features</a>
-            <a href="#pricing" className="hover:text-foreground transition">Pricing</a>
-            <a href="#faq" className="hover:text-foreground transition">FAQ</a>
+          <div className="hidden md:flex items-center gap-7 text-sm text-muted-foreground relative z-20">
+            <a href="#features" className="hover:text-foreground transition">
+              Features
+            </a>
+            <a href="#pricing" className="hover:text-foreground transition">
+              Pricing
+            </a>
+            <a href="#faq" className="hover:text-foreground transition">
+              FAQ
+            </a>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex">Sign in</Button>
-            <Button size="sm" className="bg-gradient-brand border-0 hover:opacity-90">
-              Start free
-            </Button>
+          <div className="flex items-center gap-2 relative z-20 shrink-0">
+            {loading ? (
+              <div className="h-9 w-24 rounded-lg bg-muted/40 animate-pulse" aria-hidden />
+            ) : isAuthenticated ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  className={cn(
+                    buttonVariants({ size: "sm" }),
+                    "bg-gradient-brand border-0 hover:opacity-90 text-primary-foreground",
+                  )}
+                >
+                  Dashboard
+                </Link>
+                <UserAccountMenu />
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "sm" }),
+                    "hidden sm:inline-flex",
+                  )}
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/signup"
+                  className={cn(
+                    buttonVariants({ size: "sm" }),
+                    "bg-gradient-brand border-0 hover:opacity-90 text-primary-foreground",
+                  )}
+                >
+                  Create account
+                </Link>
+              </>
+            )}
           </div>
         </nav>
       </div>

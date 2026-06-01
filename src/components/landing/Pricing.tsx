@@ -9,7 +9,7 @@ const plans = [
     cta: "Start free",
   },
   {
-    name: "Creator", price: "₹200", period: "/mo", popular: true,
+    name: "Creator", price: "₹200", period: "/mo",
     desc: "For solo creators ready to scale.",
     features: ["10 social accounts", "Unlimited scheduling", "10,000 AI credits", "Trend Radar", "Full analytics", "Brand voice memory"],
     cta: "Get Creator",
@@ -37,23 +37,15 @@ export function Pricing() {
           {plans.map((p) => (
             <div
               key={p.name}
-              className={`relative glass rounded-3xl p-7 ${p.popular ? "border-primary/50 glow" : ""}`}
+              className="relative glass rounded-3xl p-7"
             >
-              {p.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs px-3 py-1 rounded-full bg-gradient-brand text-white font-medium">
-                  Most popular
-                </div>
-              )}
               <h3 className="text-lg font-semibold">{p.name}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{p.desc}</p>
               <div className="mt-5 flex items-baseline gap-1">
                 <span className="text-4xl font-semibold tracking-tight">{p.price}</span>
                 <span className="text-sm text-muted-foreground">{p.period}</span>
               </div>
-              <Button
-                className={`mt-6 w-full ${p.popular ? "bg-gradient-brand border-0 hover:opacity-90" : ""}`}
-                variant={p.popular ? "default" : "outline"}
-              >
+              <Button className="mt-6 w-full" variant="outline">
                 {p.cta}
               </Button>
               <ul className="mt-7 space-y-3">

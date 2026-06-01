@@ -1,9 +1,14 @@
+import { Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { ArrowRight, Play } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, LayoutDashboard } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { useUserProfile } from "@/hooks/use-user-profile";
+import { cn } from "@/lib/utils";
 import dashboardImg from "@/assets/dashboard-hero.jpg";
 
 export function Hero() {
+  const { isAuthenticated, displayName, loading } = useUserProfile();
+
   return (
     <section className="relative pt-36 pb-20 overflow-hidden">
       <div className="absolute inset-0 bg-hero-glow pointer-events-none" />
@@ -26,8 +31,17 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 0.15 }}
           className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground"
         >
-          The AI-powered social media operating system for creators, agencies and brands.
-          Automate, schedule and analyze across every platform — from one futuristic dashboard.
+          {isAuthenticated ? (
+            <>
+              Welcome back, <span className="text-foreground font-medium">{displayName}</span>.
+              Continue managing your content from your dashboard.
+            </>
+          ) : (
+            <>
+              The AI-powered social media operating system for creators, agencies and brands.
+              Automate, schedule and analyze across every platform — from one futuristic dashboard.
+            </>
+          )}
         </motion.p>
 
         <motion.div
@@ -36,16 +50,36 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 0.25 }}
           className="mt-9 flex flex-wrap items-center justify-center gap-3"
         >
-          <Button size="lg" className="bg-gradient-brand border-0 hover:opacity-90 h-12 px-6 text-base">
-            Start free trial <ArrowRight className="ml-1 size-4" />
-          </Button>
-          <Button size="lg" variant="outline" className="glass h-12 px-6 text-base">
-            <Play className="mr-1 size-4" /> Watch demo
-          </Button>
+          {!loading &&
+            (isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "bg-gradient-brand border-0 hover:opacity-90 h-12 px-6 text-base inline-flex items-center",
+                )}
+              >
+                <LayoutDashboard className="mr-2 size-5" />
+                Open dashboard
+                <ArrowRight className="ml-1 size-4" />
+              </Link>
+            ) : (
+              <Link
+                to="/signup"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "bg-gradient-brand border-0 hover:opacity-90 h-12 px-6 text-base inline-flex items-center",
+                )}
+              >
+                Start free trial <ArrowRight className="ml-1 size-4" />
+              </Link>
+            ))}
         </motion.div>
 
         <p className="mt-4 text-xs text-muted-foreground">
-          No credit card required • 14-day free trial • Cancel anytime
+          {isAuthenticated
+            ? "You're signed in • Visit the marketing site anytime from your dashboard"
+            : "No credit card required • 14-day free trial • Cancel anytime"}
         </p>
 
         <motion.div

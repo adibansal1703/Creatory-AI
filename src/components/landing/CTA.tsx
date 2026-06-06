@@ -12,7 +12,7 @@ export function CTA() {
               From idea to viral. <span className="text-gradient">Powered by AI.</span>
             </h2>
             <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-              Join 4,200+ brands using Nexora AI to ship content faster, smarter and on every platform.
+              Join 4,200+ brands using Creatory AI to ship content faster, smarter and on every platform.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button size="lg" className="bg-gradient-brand border-0 hover:opacity-90 h-12 px-6">

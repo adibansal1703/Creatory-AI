@@ -1,4 +1,4 @@
--- Nexora AI production schema
+-- Creatory AI production schema
 -- Run after 20260331120000_scheduled_posts.sql OR on fresh project (uses IF NOT EXISTS)
 
 -- ---------------------------------------------------------------------------
@@ -87,11 +87,11 @@ CREATE TABLE IF NOT EXISTS public.connected_accounts (
   token_expires_at TIMESTAMPTZ,
   is_connected BOOLEAN NOT NULL DEFAULT true,
   connected_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE (user_id, platform)
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS connected_accounts_user_id_idx ON public.connected_accounts (user_id);
+ALTER TABLE public.connected_accounts DROP CONSTRAINT IF EXISTS connected_accounts_user_id_platform_key;
 
 ALTER TABLE public.connected_accounts ENABLE ROW LEVEL SECURITY;
 

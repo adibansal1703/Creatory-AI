@@ -11,11 +11,16 @@ async function requireUserId(): Promise<string> {
 }
 
 export async function fetchConnectedAccounts(): Promise<ConnectedAccount[]> {
-  await requireUserId();
+  const userId = await requireUserId();
   const { data, error } = await supabase
     .from("connected_accounts")
-    .select("id, user_id, platform, account_name, external_account_id, is_connected, connected_at, created_at")
-    .order("platform");
+    .select(
+      "id, user_id, platform, account_name, external_account_id, is_connected, connected_at, created_at",
+    )
+    .eq("user_id", userId)
+    .eq("is_connected", true)
+    .order("platform", { ascending: true })
+    .order("created_at", { ascending: true });
 
   if (error) throw new Error(error.message);
   return (data ?? []) as ConnectedAccount[];
@@ -30,7 +35,7 @@ export async function connectAccount(input: {
 
   const { data, error } = await supabase
     .from("connected_accounts")
-    .upsert(
+    .insert([
       {
         user_id: userId,
         platform: input.platform,
@@ -39,8 +44,7 @@ export async function connectAccount(input: {
         is_connected: true,
         connected_at: new Date().toISOString(),
       },
-      { onConflict: "user_id,platform" },
-    )
+    ])
     .select()
     .single();
 
@@ -48,12 +52,12 @@ export async function connectAccount(input: {
   return data as ConnectedAccount;
 }
 
-export async function disconnectAccount(platform: PostPlatform): Promise<void> {
+export async function disconnectAccount(accountId: string): Promise<void> {
   await requireUserId();
   const { error } = await supabase
     .from("connected_accounts")
     .update({ is_connected: false })
-    .eq("platform", platform);
+    .eq("id", accountId);
 
   if (error) throw new Error(error.message);
 }

@@ -17,8 +17,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { fetchConnectedAccounts } from "@/lib/api/connected-accounts";
-import { publishMultiple } from "@/lib/api/published-posts";
-import { summarizeContent } from "@/lib/api/published-posts";
+import { publishMultiple, summarizeContent } from "@/lib/api/published-posts";
+import { saveDraft } from "@/lib/api/drafts";
 import {
   buildContentPayload,
   PUBLISHING_SESSION_KEY,
@@ -60,6 +60,15 @@ export function PublishingWizard() {
       queryClient.invalidateQueries({ queryKey: ["recent-published"] });
       toast.success("Published successfully!");
       navigate({ to: "/dashboard", replace: true });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const saveDraftMutation = useMutation({
+    mutationFn: saveDraft,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
+      toast.success("Draft saved");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -117,7 +126,7 @@ export function PublishingWizard() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <p className="text-sm text-primary font-medium">Step {step} of 3</p>
+        <p className="text-sm text-primary font-medium">Step {step} of 2</p>
         <h1 className="text-3xl font-semibold tracking-tight mt-1">Multi-Platform Publishing</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Compose once, then publish now or schedule for later.
@@ -187,13 +196,33 @@ export function PublishingWizard() {
                       onChange={(e) => setField(`${platform}_caption`, e.target.value)}
                     />
                   </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label>Hashtags</Label>
+                      <Input
+                        className="glass border-border/60"
+                        placeholder="#creatory #ai"
+                        value={fields[`${platform}_hashtags`] ?? ""}
+                        onChange={(e) => setField(`${platform}_hashtags`, e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Location</Label>
+                      <Input
+                        className="glass border-border/60"
+                        placeholder="Mumbai, India"
+                        value={fields[`${platform}_location`] ?? ""}
+                        onChange={(e) => setField(`${platform}_location`, e.target.value)}
+                      />
+                    </div>
+                  </div>
                   <div className="space-y-2">
-                    <Label>Hashtags</Label>
+                    <Label>Tagged accounts</Label>
                     <Input
                       className="glass border-border/60"
-                      placeholder="#nexora #ai"
-                      value={fields[`${platform}_hashtags`] ?? ""}
-                      onChange={(e) => setField(`${platform}_hashtags`, e.target.value)}
+                      placeholder="@brand, @creator"
+                      value={fields[`${platform}_tagged_accounts`] ?? ""}
+                      onChange={(e) => setField(`${platform}_tagged_accounts`, e.target.value)}
                     />
                   </div>
                 </>
@@ -220,6 +249,7 @@ export function PublishingWizard() {
                     <Label>Tags</Label>
                     <Input
                       className="glass border-border/60"
+                      placeholder="ai, marketing, content"
                       value={fields[`${platform}_tags`] ?? ""}
                       onChange={(e) => setField(`${platform}_tags`, e.target.value)}
                     />
@@ -250,14 +280,64 @@ export function PublishingWizard() {
                   </p>
                 </div>
               )}
+              <div className="space-y-2">
+                <Label>Media</Label>
+                <div className="glass rounded-xl border border-dashed border-border/60 p-4 text-sm text-muted-foreground">
+                  <p>Upload placeholder media for {PLATFORM_LABELS[platform]}.</p>
+                  <input
+                    type="file"
+                    aria-label={`Upload media for ${PLATFORM_LABELS[platform]}`}
+                    className="mt-3 w-full text-sm text-muted-foreground"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) {
+                        setField(`${platform}_media`, file.name);
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+              {!isPlatformConnected(platform) && (
+                <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+                  <p>Please connect your account before creating content for {PLATFORM_LABELS[platform]}.</p>
+                  <Button variant="outline" size="sm" className="mt-3 glass" asChild>
+                    <Link to="/dashboard/accounts">Connect account</Link>
+                  </Button>
+                </div>
+              )}
             </div>
           ))}
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button variant="outline" className="glass" onClick={() => setStep(1)}>
               Back
             </Button>
             <Button className="bg-gradient-brand border-0" onClick={continueToAction}>
               Continue
+            </Button>
+            <Button
+              variant="outline"
+              className="glass"
+              disabled={selected.length === 0 || saveDraftMutation.isPending}
+              onClick={async () => {
+                if (selected.length === 0) {
+                  toast.error("Select at least one platform before saving a draft.");
+                  return;
+                }
+                const payload = getPayload();
+                const hasContent = selected.some(
+                  (p) => summarizeContent(p, payload).trim().length > 0,
+                );
+                if (!hasContent) {
+                  toast.error("Add content before saving a draft.");
+                  return;
+                }
+                await saveDraftMutation.mutateAsync({
+                  platforms: selected,
+                  contentPayload: payload,
+                });
+              }}
+            >
+              {saveDraftMutation.isPending ? "Saving draft…" : "Save draft"}
             </Button>
           </div>
         </div>

@@ -23,7 +23,7 @@ function AuthCallbackPage() {
         if (cancelled) return;
 
         if (session?.user && verified) {
-          toast.success("Email verified! Welcome to Nexora AI.");
+          toast.success("Email verified! Welcome to Creatory AI.");
           navigate({ to: "/dashboard", replace: true });
           return;
         }

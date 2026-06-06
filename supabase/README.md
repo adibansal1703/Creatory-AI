@@ -1,4 +1,4 @@
-# Supabase setup — Nexora AI
+# Supabase setup — Creatory AI
 
 ## Run migrations (in order)
 

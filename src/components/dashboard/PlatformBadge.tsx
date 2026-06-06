@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import { Facebook, Instagram, Linkedin } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PLATFORM_LABELS, type PostPlatform } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,7 @@ const platformIcons: Record<PostPlatform, ComponentType<{ className?: string }>>
   x: XIcon,
   instagram: Instagram,
   facebook: Facebook,
+  youtube: Youtube,
 };
 
 export function PlatformBadge({

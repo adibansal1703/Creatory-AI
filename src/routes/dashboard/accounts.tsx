@@ -6,7 +6,7 @@ export const Route = createFileRoute("/dashboard/accounts")({
   validateSearch: (search: Record<string, unknown>) => ({
     reason: (search.reason as string) || undefined,
   }),
-  head: () => ({ meta: [{ title: "Connected Accounts — Nexora AI" }] }),
+  head: () => ({ meta: [{ title: "Connected Accounts — Creatory AI" }] }),
   component: AccountsRoute,
 });
 

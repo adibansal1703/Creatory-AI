@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/lib/supabase";
 import { scheduledPostsQueryKey } from "@/hooks/use-scheduled-posts";
 import { toast } from "sonner";
 import { CheckCircle2, Loader2 } from "lucide-react";
@@ -36,6 +38,7 @@ export function SmartSchedulerPage() {
   const [timezone, setTimezone] = useState("Asia/Kolkata");
   const [session, setSession] = useState<PublishingSession | null>(null);
   const [confirmed, setConfirmed] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const raw = sessionStorage.getItem(PUBLISHING_SESSION_KEY);
@@ -47,6 +50,20 @@ export function SmartSchedulerPage() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("timezone")
+      .eq("id", user.id)
+      .single()
+      .then(({ data, error }) => {
+        if (!error && data?.timezone) {
+          setTimezone(data.timezone);
+        }
+      });
+  }, [user]);
 
   const scheduleMutation = useMutation({
     mutationFn: async () => {
@@ -168,7 +185,7 @@ export function SmartSchedulerPage() {
         </div>
       )}
 
-      <ScheduledPostsSection variant="embedded" />
+      <ScheduledPostsSection variant="page" />
     </div>
   );
 }

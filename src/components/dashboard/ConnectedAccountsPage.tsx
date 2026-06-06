@@ -1,15 +1,11 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Plus, Unlink } from "lucide-react";
 import { PlatformBadge } from "@/components/dashboard/PlatformBadge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,17 +14,22 @@ import {
   disconnectAccount,
   fetchConnectedAccounts,
 } from "@/lib/api/connected-accounts";
-import { PLATFORMS, PLATFORM_LABELS, type PostPlatform } from "@/lib/types/database";
+import {
+  PLATFORMS,
+  PLATFORM_LABELS,
+  type ConnectedAccount,
+  type PostPlatform,
+} from "@/lib/types/database";
 
 export function ConnectedAccountsPage() {
   const queryClient = useQueryClient();
+  const [connecting, setConnecting] = useState<PostPlatform | null>(null);
+  const [accountName, setAccountName] = useState("");
+
   const { data: accounts, isLoading, isError, refetch } = useQuery({
     queryKey: ["connected-accounts"],
     queryFn: fetchConnectedAccounts,
   });
-
-  const [connecting, setConnecting] = useState<PostPlatform | null>(null);
-  const [accountName, setAccountName] = useState("");
 
   const connectMutation = useMutation({
     mutationFn: connectAccount,
@@ -52,88 +53,120 @@ export function ConnectedAccountsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const getAccount = (platform: PostPlatform) =>
-    accounts?.find((a) => a.platform === platform && a.is_connected);
+  const groupedPlatforms = useMemo(
+    () =>
+      PLATFORMS.map((platform) => ({
+        platform,
+        accounts: accounts?.filter((account) => account.platform === platform) ?? [],
+      })),
+    [accounts],
+  );
+
+  const totalConnected = accounts?.filter((account) => account.is_connected).length ?? 0;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Connected Accounts</h1>
         <p className="mt-1 text-muted-foreground">
-          Link your social profiles before publishing or scheduling content.
+          Link one or more social profiles and manage connected accounts across platforms.
         </p>
       </div>
 
       {isError && (
         <div className="glass rounded-xl p-4 text-sm text-destructive">
-          Failed to load accounts.{" "}
-          <button className="underline" onClick={() => refetch()}>
-            Retry
-          </button>
+          Failed to load accounts. <button className="underline" onClick={() => refetch()}>Retry</button>
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        {PLATFORMS.map((platform) => {
-          const connected = getAccount(platform);
-          return (
-            <div key={platform} className="glass rounded-2xl p-5 border border-border/60">
-              <div className="flex items-start justify-between gap-3">
-                <PlatformBadge platform={platform} />
-                <span
-                  className={
-                    connected
-                      ? "text-xs text-emerald-400 font-medium"
-                      : "text-xs text-muted-foreground"
-                  }
-                >
-                  {connected ? "Connected" : "Not connected"}
-                </span>
-              </div>
-              {isLoading ? (
-                <Skeleton className="h-4 w-32 mt-4" />
-              ) : connected ? (
-                <p className="mt-3 text-sm text-muted-foreground">{connected.account_name}</p>
-              ) : (
-                <p className="mt-3 text-sm text-muted-foreground">
-                  Connect your {PLATFORM_LABELS[platform]} account
+      {!isLoading && totalConnected === 0 && (
+        <div className="glass rounded-2xl p-6 border border-border/60 text-sm text-muted-foreground">
+          <p className="font-medium">No connected accounts yet.</p>
+          <p className="mt-2">
+            Use the plus button on any platform card below to add your first account.
+          </p>
+        </div>
+      )}
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {groupedPlatforms.map(({ platform, accounts }) => (
+          <Card key={platform} className="glass border-border/60">
+            <CardHeader className="flex items-start justify-between gap-3 pb-3">
+              <div>
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {PLATFORM_LABELS[platform]}
+                </CardTitle>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {accounts.length} linked account{accounts.length === 1 ? "" : "s"}
                 </p>
-              )}
-              <div className="mt-4 flex gap-2">
-                {connected ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="glass"
-                    disabled={disconnectMutation.isPending}
-                    onClick={() => disconnectMutation.mutate(platform)}
-                  >
-                    Disconnect
-                  </Button>
-                ) : (
-                  <Button
-                    size="sm"
-                    className="bg-gradient-brand border-0 hover:opacity-90"
-                    onClick={() => setConnecting(platform)}
-                  >
-                    Connect
-                  </Button>
-                )}
               </div>
-            </div>
-          );
-        })}
+              <Button
+                size="sm"
+                className="bg-gradient-brand border-0 hover:opacity-90"
+                onClick={() => setConnecting(platform)}
+              >
+                <Plus className="size-4" />
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {isLoading ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              ) : accounts.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  Connect your {PLATFORM_LABELS[platform]} account to publish and schedule.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {accounts.map((account) => (
+                        <div
+                          key={account.id}
+                          className="rounded-2xl border border-border/60 bg-secondary/30 p-4"
+                        >
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                            <div className="space-y-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <PlatformBadge platform={platform} />
+                                <p className="font-medium truncate">{account.account_name}</p>
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                Status: {account.is_connected ? "Connected" : "Disconnected"}
+                              </p>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="glass shrink-0"
+                              disabled={disconnectMutation.isPending}
+                              onClick={() => disconnectMutation.mutate(account.id)}
+                            >
+                              <Unlink className="size-4" />
+                              Disconnect
+                            </Button>
+                          </div>
+                      <div className="mt-3 text-xs text-muted-foreground space-y-1">
+                        <p>
+                          Account ID: {account.external_account_id ?? "—"}
+                        </p>
+                        <p>Connected at: {new Date(account.connected_at).toLocaleString()}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <Dialog open={connecting !== null} onOpenChange={(o) => !o && setConnecting(null)}>
-        <DialogContent className="glass border-border/60">
+      <Dialog open={connecting !== null} onOpenChange={(open) => !open && setConnecting(null)}>
+        <DialogContent className="glass border-border/60 max-w-lg">
           <DialogHeader>
-            <DialogTitle>
-              Connect {connecting ? PLATFORM_LABELS[connecting] : ""}
-            </DialogTitle>
+            <DialogTitle>Connect {connecting ? PLATFORM_LABELS[connecting] : "account"}</DialogTitle>
             <DialogDescription>
-              Enter your account display name. OAuth tokens will be stored when platform API keys
-              are configured in production.
+              Add a profile name for this platform. Placeholder connections are stored now and can be upgraded to OAuth in future releases.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -149,7 +182,7 @@ export function ConnectedAccountsPage() {
             </div>
             <Button
               className="w-full bg-gradient-brand border-0"
-              disabled={!accountName.trim() || connectMutation.isPending}
+              disabled={!accountName.trim() || connectMutation.isPending || !connecting}
               onClick={() =>
                 connecting &&
                 connectMutation.mutate({

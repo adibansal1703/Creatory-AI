@@ -15,10 +15,10 @@ export function summarizeContent(platform: PostPlatform, payload: ContentPayload
   const p = payload[platform];
   if (!p) return "";
   if (platform === "youtube") {
-    return [p.title, p.description].filter(Boolean).join("\n\n");
+    return [p.title, p.description, p.tags].filter(Boolean).join("\n\n");
   }
   if (platform === "instagram") {
-    return [p.caption, p.hashtags].filter(Boolean).join("\n\n");
+    return [p.caption, p.hashtags, p.location, p.tagged_accounts].filter(Boolean).join("\n\n");
   }
   return (p.content as string) || (p.caption as string) || "";
 }

@@ -7,7 +7,7 @@ import {
   Send,
   Settings,
 } from "lucide-react";
-import logo from "@/assets/nexora-logo.png";
+import logo from "@/assets/creatory-logo.png";
 import { UserAccountMenu } from "@/components/layout/UserAccountMenu";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +31,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <aside className="hidden lg:flex w-64 flex-col border-r border-border/60 glass shrink-0">
           <div className="p-5 border-b border-border/60 space-y-3">
             <Link to="/dashboard">
-              <img src={logo} alt="Nexora AI" className="h-8 w-auto" />
+              <img src={logo} alt="Creatory AI" className="h-8 w-auto" />
             </Link>
             <Link
               to="/"
@@ -70,7 +70,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           <header className="lg:hidden border-b border-border/60 glass sticky top-0 z-40 px-4 py-3">
             <div className="flex items-center justify-between gap-2">
               <Link to="/dashboard">
-                <img src={logo} alt="Nexora AI" className="h-7 w-auto" />
+                <img src={logo} alt="Creatory AI" className="h-7 w-auto" />
               </Link>
               <div className="flex items-center gap-1">
                 <Link

@@ -20,7 +20,7 @@ export const Route = createFileRoute("/login")({
     verify: (search.verify as string) || undefined,
   }),
   head: () => ({
-    meta: [{ title: "Log in — Nexora AI" }],
+    meta: [{ title: "Log in — Creatory AI" }],
   }),
   component: LoginPage,
 });
@@ -111,7 +111,7 @@ function LoginPage() {
   return (
     <AuthLayout
       title="Welcome back"
-      subtitle="Log in to your Nexora AI workspace"
+      subtitle="Log in to your Creatory AI workspace"
       footer={
         <>
           Don&apos;t have an account?{" "}

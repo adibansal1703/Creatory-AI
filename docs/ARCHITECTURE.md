@@ -1,4 +1,4 @@
-# Nexora AI — Production architecture
+# Creatory AI — Production architecture
 
 ## Application routes
 

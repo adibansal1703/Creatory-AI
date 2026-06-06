@@ -1,6 +1,13 @@
 import { supabase } from "@/lib/supabase";
 
-type NotificationType = "welcome" | "email_verification" | "post_scheduled" | "post_published";
+type NotificationType =
+  | "welcome"
+  | "email_verification"
+  | "post_scheduled"
+  | "post_published"
+  | "email_changed"
+  | "password_changed"
+  | "account_deletion_requested";
 
 export async function enqueueNotification(
   type: NotificationType,

@@ -23,7 +23,7 @@ export const Route = createFileRoute("/signup")({
     pending: search.pending === "1" || search.pending === true,
   }),
   head: () => ({
-    meta: [{ title: "Create account — Nexora AI" }],
+    meta: [{ title: "Create account — Creatory AI" }],
   }),
   component: SignupPage,
 });
@@ -298,7 +298,7 @@ function SignupPage() {
           />
           <PasswordStrengthMeter password={password ?? ""} />
           <p className="text-xs text-muted-foreground">
-            8+ chars, uppercase, lowercase, number & symbol (e.g. Nexora@123)
+            8+ chars, uppercase, lowercase, number & symbol (e.g. Creatory@123)
           </p>
         </div>
 

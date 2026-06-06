@@ -12,6 +12,8 @@ export function buildContentPayload(
         payload.instagram = {
           caption: fields[`${platform}_caption`] ?? "",
           hashtags: fields[`${platform}_hashtags`] ?? "",
+          location: fields[`${platform}_location`] ?? "",
+          tagged_accounts: fields[`${platform}_tagged_accounts`] ?? "",
           media_url: fields[`${platform}_media`] ?? null,
         };
         break;
@@ -20,7 +22,7 @@ export function buildContentPayload(
           title: fields[`${platform}_title`] ?? "",
           description: fields[`${platform}_description`] ?? "",
           tags: fields[`${platform}_tags`] ?? "",
-          media_url: fields[`${platform}_media`] ?? null,
+          video_url: fields[`${platform}_media`] ?? null,
         };
         break;
       default:
@@ -35,7 +37,7 @@ export function buildContentPayload(
   return payload;
 }
 
-export const PUBLISHING_SESSION_KEY = "nexora_publishing_draft";
+export const PUBLISHING_SESSION_KEY = "creatory_publishing_draft";
 
 export type PublishingSession = {
   platforms: PostPlatform[];

@@ -16,7 +16,7 @@ export function Features() {
             One platform. <span className="text-gradient">Every workflow.</span>
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Stop juggling 7 tools. Nexora AI replaces your scheduler, analytics suite, trend tracker and copywriter — with intelligent agents that learn your brand.
+            Stop juggling 7 tools. Creatory AI replaces your scheduler, analytics suite, trend tracker and copywriter — with intelligent agents that learn your brand.
           </p>
         </div>
 

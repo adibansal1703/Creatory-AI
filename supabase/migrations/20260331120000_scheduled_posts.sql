@@ -1,4 +1,4 @@
--- Scheduled posts table for Nexora AI post scheduling
+-- Scheduled posts table for Creatory AI post scheduling
 -- Run in Supabase SQL Editor or via: supabase db push
 
 -- Platform enum

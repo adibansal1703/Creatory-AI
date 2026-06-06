@@ -92,7 +92,7 @@ export function Hero() {
           <div className="relative glass rounded-3xl p-2 glow">
             <img
               src={dashboardImg}
-              alt="Nexora AI dashboard preview"
+              alt="Creatory AI dashboard preview"
               width={1600}
               height={1100}
               className="rounded-2xl w-full h-auto"

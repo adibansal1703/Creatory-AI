@@ -51,7 +51,6 @@ export type ScheduledPost = {
   scheduled_time: string;
   timezone: string;
   status: PostStatus;
-  n8n_job_id: string | null;
   published_at: string | null;
   error_message: string | null;
   created_at: string;

@@ -2,10 +2,10 @@ import { getMetaConfig } from "@/lib/meta/config.server";
 
 const INSTAGRAM_SCOPES = [
   "instagram_basic",
-  "instagram_content_publish",
   "pages_show_list",
   "pages_read_engagement",
   "pages_manage_metadata",
+  "business_management",
 ].join(",");
 
 type TokenResponse = {
@@ -106,9 +106,10 @@ export async function exchangeForLongLivedUserToken(
   return parseGraphResponse<TokenResponse>(response);
 }
 
-export async function fetchInstagramBusinessAccounts(
+async function fetchFacebookPages(
   userAccessToken: string,
-): Promise<InstagramAccountConnection[]> {
+  endpoint: "me/accounts" | "me/assigned_pages",
+): Promise<FacebookPage[]> {
   const config = getMetaConfig();
   const params = new URLSearchParams({
     fields: "id,name,access_token,instagram_business_account{id,username}",
@@ -116,11 +117,16 @@ export async function fetchInstagramBusinessAccounts(
   });
 
   const response = await fetch(
-    `${config.apiBaseUrl}/${config.graphVersion}/me/accounts?${params.toString()}`,
+    `${config.apiBaseUrl}/${config.graphVersion}/${endpoint}?${params.toString()}`,
   );
   const body = await parseGraphResponse<{ data?: FacebookPage[] }>(response);
-  const pages = body.data ?? [];
+  return body.data ?? [];
+}
 
+function mapPagesToInstagramConnections(
+  pages: FacebookPage[],
+  userAccessToken: string,
+): InstagramAccountConnection[] {
   const connections: InstagramAccountConnection[] = [];
 
   for (const page of pages) {
@@ -140,6 +146,58 @@ export async function fetchInstagramBusinessAccounts(
   }
 
   return connections;
+}
+
+function buildInstagramDiscoveryError(pages: FacebookPage[]): string {
+  if (pages.length === 0) {
+    return [
+      "No Facebook Pages were returned for your account.",
+      "During login, grant access to all Pages when Facebook asks.",
+      "If your Page is in Meta Business Manager, ensure business_management is approved for this app.",
+      "The Facebook account you use must be an Admin of the Page linked to Instagram.",
+    ].join(" ");
+  }
+
+  const pageNames = pages.map((page) => page.name).join(", ");
+  return [
+    `Found ${pages.length} Facebook Page(s) (${pageNames}), but none have a linked Instagram Business or Creator account.`,
+    "In Instagram: Settings → Account type → switch to Professional (Business or Creator).",
+    "Then link it to your Facebook Page: Instagram → Settings → Linked accounts → Facebook.",
+    "Or in Meta Business Suite: connect the Instagram profile to the Page, then try again.",
+  ].join(" ");
+}
+
+export async function fetchInstagramBusinessAccounts(
+  userAccessToken: string,
+): Promise<InstagramAccountConnection[]> {
+  const ownedPages = await fetchFacebookPages(userAccessToken, "me/accounts");
+  let connections = mapPagesToInstagramConnections(ownedPages, userAccessToken);
+
+  console.log("[Instagram OAuth] /me/accounts:", {
+    pageCount: ownedPages.length,
+    pagesWithInstagram: connections.length,
+    pageNames: ownedPages.map((page) => page.name),
+  });
+
+  if (connections.length > 0) {
+    return connections;
+  }
+
+  const assignedPages = await fetchFacebookPages(userAccessToken, "me/assigned_pages");
+  connections = mapPagesToInstagramConnections(assignedPages, userAccessToken);
+
+  console.log("[Instagram OAuth] /me/assigned_pages:", {
+    pageCount: assignedPages.length,
+    pagesWithInstagram: connections.length,
+    pageNames: assignedPages.map((page) => page.name),
+  });
+
+  if (connections.length > 0) {
+    return connections;
+  }
+
+  const allPages = [...ownedPages, ...assignedPages];
+  throw new Error(buildInstagramDiscoveryError(allPages));
 }
 
 export function tokenExpiresAtFromResponse(token: TokenResponse): string | null {
@@ -176,12 +234,6 @@ export async function completeInstagramOAuthFlow(code: string): Promise<Instagra
   const longLived = await exchangeForLongLivedUserToken(shortLived.access_token);
   const tokenExpiresAt = tokenExpiresAtFromResponse(longLived);
   const connections = await fetchInstagramBusinessAccounts(longLived.access_token);
-
-  if (connections.length === 0) {
-    throw new Error(
-      "No Instagram Business account found. Connect an Instagram Business or Creator account to a Facebook Page, then try again.",
-    );
-  }
 
   const primary = connections[0];
   return {

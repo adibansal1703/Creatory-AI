@@ -36,10 +36,6 @@ type InstagramAccountConnection = {
   tokenExpiresAt: string | null;
 };
 
-function graphBaseUrl(graphVersion: string): string {
-  return `https://graph.facebook.com/${graphVersion}`;
-}
-
 async function parseGraphResponse<T>(response: Response): Promise<T> {
   const body = (await response.json()) as T & { error?: { message?: string; type?: string } };
 
@@ -52,6 +48,7 @@ async function parseGraphResponse<T>(response: Response): Promise<T> {
 
 export function buildInstagramAuthorizeUrl(input: { state: string }): string {
   const config = getMetaConfig();
+  const path = `${config.oauthBaseUrl}/${config.graphVersion}/dialog/oauth`;
   const params = new URLSearchParams({
     client_id: config.appId,
     redirect_uri: config.redirectUri,
@@ -60,7 +57,19 @@ export function buildInstagramAuthorizeUrl(input: { state: string }): string {
     response_type: "code",
   });
 
-  return `https://www.facebook.com/${config.graphVersion}/dialog/oauth?${params.toString()}`;
+  const url = `${path}?${params.toString()}`;
+
+  console.log("[Instagram OAuth] buildInstagramAuthorizeUrl — complete URL:", url);
+  console.log("[Instagram OAuth] buildInstagramAuthorizeUrl — breakdown:", {
+    path,
+    client_id: config.appId,
+    redirect_uri: config.redirectUri,
+    scope: INSTAGRAM_SCOPES,
+    response_type: "code",
+    state: input.state,
+  });
+
+  return url;
 }
 
 export async function exchangeCodeForShortLivedToken(code: string): Promise<TokenResponse> {
@@ -73,7 +82,7 @@ export async function exchangeCodeForShortLivedToken(code: string): Promise<Toke
   });
 
   const response = await fetch(
-    `${graphBaseUrl(config.graphVersion)}/oauth/access_token?${params.toString()}`,
+    `${config.apiBaseUrl}/${config.graphVersion}/oauth/access_token?${params.toString()}`,
   );
 
   return parseGraphResponse<TokenResponse>(response);
@@ -91,7 +100,7 @@ export async function exchangeForLongLivedUserToken(
   });
 
   const response = await fetch(
-    `${graphBaseUrl(config.graphVersion)}/oauth/access_token?${params.toString()}`,
+    `${config.apiBaseUrl}/${config.graphVersion}/oauth/access_token?${params.toString()}`,
   );
 
   return parseGraphResponse<TokenResponse>(response);
@@ -106,7 +115,9 @@ export async function fetchInstagramBusinessAccounts(
     access_token: userAccessToken,
   });
 
-  const response = await fetch(`${graphBaseUrl(config.graphVersion)}/me/accounts?${params.toString()}`);
+  const response = await fetch(
+    `${config.apiBaseUrl}/${config.graphVersion}/me/accounts?${params.toString()}`,
+  );
   const body = await parseGraphResponse<{ data?: FacebookPage[] }>(response);
   const pages = body.data ?? [];
 
@@ -148,7 +159,7 @@ export async function validateInstagramAccessToken(input: {
 
   try {
     const response = await fetch(
-      `${graphBaseUrl(config.graphVersion)}/${input.externalAccountId}?${params.toString()}`,
+      `${config.apiBaseUrl}/${config.graphVersion}/${input.externalAccountId}?${params.toString()}`,
     );
     const body = await parseGraphResponse<{ id: string; username?: string }>(response);
     return { valid: true, username: body.username };

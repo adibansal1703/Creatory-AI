@@ -13,6 +13,7 @@ import { PasswordField } from "@/components/auth/PasswordField";
 import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 import { useAuth } from "@/hooks/use-auth";
 import { ensureUserProfile, isEmailVerified } from "@/lib/auth-session";
+import { getAuthCallbackUrl } from "@/lib/env";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { signupSchema, type SignupFormValues } from "@/lib/validations/auth";
 import { toast } from "sonner";
@@ -79,7 +80,7 @@ function SignupPage() {
       type: "signup",
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: getAuthCallbackUrl(),
       },
     });
     if (error) {
@@ -102,7 +103,7 @@ function SignupPage() {
       email: data.email.trim(),
       password: data.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: getAuthCallbackUrl(),
         data: { full_name: data.name.trim() },
       },
     });

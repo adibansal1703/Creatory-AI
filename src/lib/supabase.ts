@@ -1,15 +1,14 @@
 import { createBrowserClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? "";
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? "";
+import { getSupabaseAnonKey, getSupabaseUrl, isClientEnvConfigured } from "@/lib/env";
 
 /**
  * Browser client with cookie-backed PKCE storage so email verification links
  * work across tabs and survive better than localStorage-only verifiers.
  */
 function createClient(): SupabaseClient {
-  return createBrowserClient(supabaseUrl, supabaseAnonKey);
+  return createBrowserClient(getSupabaseUrl(), getSupabaseAnonKey());
 }
 
 let browserClient: SupabaseClient | null = null;
@@ -37,4 +36,4 @@ export const supabase = new Proxy({} as SupabaseClient, {
   },
 });
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+export const isSupabaseConfigured = isClientEnvConfigured;

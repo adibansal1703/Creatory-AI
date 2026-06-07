@@ -21,13 +21,13 @@ Open **SQL Editor** in Supabase Dashboard → paste → Run.
 ## Auth settings
 
 1. **Authentication → Providers → Email** — Enable email confirmations for production.
-2. **URL Configuration** — Add these redirect URLs:
-   - `http://localhost:5173/auth/callback`
-   - `http://localhost:5173/auth/instagram/callback`
-   - `http://localhost:5173/**` (or your production domain equivalents)
+2. **URL Configuration** — Add redirect URLs derived from your `APP_URL` environment variable:
+   - `${APP_URL}/auth/callback`
+   - `${APP_URL}/auth/instagram/callback`
+   - `${APP_URL}/**` (wildcard for your deployment origin)
 3. Customize email templates: Welcome, Confirm signup, Reset password.
 
-Register the Instagram callback URL in the Meta Developer Console as well.
+Register the Instagram callback URL (`META_REDIRECT_URI`) in the Meta Developer Console as well.
 
 ## RLS
 

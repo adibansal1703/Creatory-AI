@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { ensureUserProfile, isEmailVerified } from "@/lib/auth-session";
+import { getAuthCallbackUrl } from "@/lib/env";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { loginSchema, type LoginFormValues } from "@/lib/validations/auth";
 
@@ -99,7 +100,7 @@ function LoginPage() {
       return;
     }
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: getAuthCallbackUrl(),
     });
     if (error) {
       toast.error(error.message);

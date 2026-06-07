@@ -16,7 +16,7 @@ Open **SQL Editor** in Supabase Dashboard → paste → Run.
 | `drafts` | Saved composer drafts |
 | `scheduled_posts` | Posts waiting to publish |
 | `published_posts` | Published content history |
-| `notification_queue` | Email jobs for n8n |
+| `notification_queue` | Email jobs for the email worker |
 
 ## Auth settings
 
@@ -28,8 +28,9 @@ Open **SQL Editor** in Supabase Dashboard → paste → Run.
 
 ## RLS
 
-All user tables enforce `auth.uid() = user_id`. Service role bypasses RLS for n8n workflows.
+All user tables enforce `auth.uid() = user_id`. Service role bypasses RLS for scheduler and email worker scripts.
 
-## n8n
+## Background workers
 
-See `../n8n/README.md` for publishing and email workflows.
+- `npm run run:scheduler` — publishes scheduled posts
+- `npm run run:email-worker` — sends queued emails

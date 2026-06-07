@@ -96,7 +96,7 @@ export function SmartSchedulerPage() {
         <CheckCircle2 className="mx-auto size-14 text-emerald-400" />
         <h1 className="text-2xl font-semibold">Your post has been scheduled successfully.</h1>
         <p className="text-muted-foreground text-sm">
-          You will receive an email confirmation. n8n will publish at the scheduled time.
+          You will receive an email confirmation. Your post will publish at the scheduled time.
         </p>
         <div className="flex flex-wrap gap-3 justify-center">
           <Button className="bg-gradient-brand border-0" asChild>

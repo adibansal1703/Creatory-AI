@@ -48,7 +48,7 @@ async function setSchedulerRunId(postId) {
   const jobId = `scheduler:${new Date().toISOString()}`;
   const { error } = await supabase
     .from("scheduled_posts")
-    .update({ n8n_job_id: jobId })
+    .update({ scheduler_job_id: jobId })
     .eq("id", postId);
 
   if (error) {
@@ -60,7 +60,7 @@ async function markPostFailed(postId, message) {
   const payload = {
     status: "failed",
     error_message: message,
-    n8n_job_id: `scheduler:error:${new Date().toISOString()}`,
+    scheduler_job_id: `scheduler:error:${new Date().toISOString()}`,
   };
   const { error } = await supabase.from("scheduled_posts").update(payload).eq("id", postId);
   if (error) {

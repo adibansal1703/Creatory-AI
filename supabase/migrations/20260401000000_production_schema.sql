@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS public.scheduled_posts (
   scheduled_time TIMESTAMPTZ NOT NULL,
   timezone TEXT NOT NULL DEFAULT 'UTC',
   status public.post_status NOT NULL DEFAULT 'scheduled',
-  n8n_job_id TEXT,
+  scheduler_job_id TEXT,
   published_at TIMESTAMPTZ,
   error_message TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -141,14 +141,14 @@ CREATE TABLE IF NOT EXISTS public.scheduled_posts (
 
 ALTER TABLE public.scheduled_posts ADD COLUMN IF NOT EXISTS content_payload JSONB NOT NULL DEFAULT '{}';
 ALTER TABLE public.scheduled_posts ADD COLUMN IF NOT EXISTS timezone TEXT NOT NULL DEFAULT 'UTC';
-ALTER TABLE public.scheduled_posts ADD COLUMN IF NOT EXISTS n8n_job_id TEXT;
+ALTER TABLE public.scheduled_posts ADD COLUMN IF NOT EXISTS scheduler_job_id TEXT;
 ALTER TABLE public.scheduled_posts ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ;
 ALTER TABLE public.scheduled_posts ADD COLUMN IF NOT EXISTS error_message TEXT;
 
 CREATE INDEX IF NOT EXISTS scheduled_posts_user_id_idx ON public.scheduled_posts (user_id);
 CREATE INDEX IF NOT EXISTS scheduled_posts_scheduled_time_idx ON public.scheduled_posts (scheduled_time);
 CREATE INDEX IF NOT EXISTS scheduled_posts_status_idx ON public.scheduled_posts (status);
-CREATE INDEX IF NOT EXISTS scheduled_posts_n8n_ready_idx
+CREATE INDEX IF NOT EXISTS scheduled_posts_ready_idx
   ON public.scheduled_posts (scheduled_time)
   WHERE status = 'scheduled';
 
@@ -202,7 +202,7 @@ CREATE POLICY "Users manage own published posts"
   USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
 -- ---------------------------------------------------------------------------
--- Notification queue (n8n / email worker polls this)
+-- Notification queue (email worker polls this)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.notification_queue (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -229,7 +229,7 @@ CREATE POLICY "Users can enqueue own notifications"
   ON public.notification_queue FOR INSERT TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
--- Service role / n8n updates processed_at via service key (bypasses RLS)
+-- Service role updates processed_at via service key (bypasses RLS)
 
 -- ---------------------------------------------------------------------------
 -- Auth helpers
@@ -289,7 +289,7 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- ---------------------------------------------------------------------------
--- n8n: posts ready to publish (query from workflow)
+-- Posts ready to publish (queried by scheduler)
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE VIEW public.posts_ready_to_publish AS
 SELECT
@@ -311,7 +311,7 @@ WHERE sp.status = 'scheduled'
 
 GRANT SELECT ON public.posts_ready_to_publish TO service_role;
 
--- Mark published (callable by n8n with service role)
+-- Mark published (callable by scheduler with service role)
 CREATE OR REPLACE FUNCTION public.mark_post_published(
   post_id UUID,
   external_id TEXT DEFAULT NULL
@@ -330,7 +330,7 @@ BEGIN
   END IF;
 
   UPDATE public.scheduled_posts
-  SET status = 'published', published_at = now(), n8n_job_id = COALESCE(n8n_job_id, 'done')
+  SET status = 'published', published_at = now(), scheduler_job_id = COALESCE(scheduler_job_id, 'done')
   WHERE id = post_id;
 
   INSERT INTO public.published_posts (

@@ -35,6 +35,7 @@ export type ConnectedAccount = {
   platform: PostPlatform;
   account_name: string;
   external_account_id: string | null;
+  token_expires_at: string | null;
   is_connected: boolean;
   connected_at: string;
   created_at: string;

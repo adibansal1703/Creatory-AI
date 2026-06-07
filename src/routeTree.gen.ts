@@ -20,6 +20,7 @@ import { Route as DashboardAccountsRouteImport } from './routes/dashboard/accoun
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as DashboardPublishingIndexRouteImport } from './routes/dashboard/publishing/index'
 import { Route as DashboardPostsNewRouteImport } from './routes/dashboard/posts/new'
+import { Route as AuthInstagramCallbackRouteImport } from './routes/auth/instagram/callback'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -77,6 +78,11 @@ const DashboardPostsNewRoute = DashboardPostsNewRouteImport.update({
   path: '/posts/new',
   getParentRoute: () => DashboardRoute,
 } as any)
+const AuthInstagramCallbackRoute = AuthInstagramCallbackRouteImport.update({
+  id: '/auth/instagram/callback',
+  path: '/auth/instagram/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/scheduler': typeof DashboardSchedulerRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/auth/instagram/callback': typeof AuthInstagramCallbackRoute
   '/dashboard/posts/new': typeof DashboardPostsNewRoute
   '/dashboard/publishing/': typeof DashboardPublishingIndexRoute
 }
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/dashboard/scheduler': typeof DashboardSchedulerRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/auth/instagram/callback': typeof AuthInstagramCallbackRoute
   '/dashboard/posts/new': typeof DashboardPostsNewRoute
   '/dashboard/publishing': typeof DashboardPublishingIndexRoute
 }
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/dashboard/scheduler': typeof DashboardSchedulerRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/auth/instagram/callback': typeof AuthInstagramCallbackRoute
   '/dashboard/posts/new': typeof DashboardPostsNewRoute
   '/dashboard/publishing/': typeof DashboardPublishingIndexRoute
 }
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/dashboard/scheduler'
     | '/dashboard/settings'
     | '/dashboard/'
+    | '/auth/instagram/callback'
     | '/dashboard/posts/new'
     | '/dashboard/publishing/'
   fileRoutesByTo: FileRoutesByTo
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/dashboard/scheduler'
     | '/dashboard/settings'
     | '/dashboard'
+    | '/auth/instagram/callback'
     | '/dashboard/posts/new'
     | '/dashboard/publishing'
   id:
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/dashboard/scheduler'
     | '/dashboard/settings'
     | '/dashboard/'
+    | '/auth/instagram/callback'
     | '/dashboard/posts/new'
     | '/dashboard/publishing/'
   fileRoutesById: FileRoutesById
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  AuthInstagramCallbackRoute: typeof AuthInstagramCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardPostsNewRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/auth/instagram/callback': {
+      id: '/auth/instagram/callback'
+      path: '/auth/instagram/callback'
+      fullPath: '/auth/instagram/callback'
+      preLoaderRoute: typeof AuthInstagramCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -276,6 +296,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  AuthInstagramCallbackRoute: AuthInstagramCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

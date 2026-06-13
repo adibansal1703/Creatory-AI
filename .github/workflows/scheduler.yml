@@ -28,4 +28,4 @@ jobs:
           META_APP_SECRET: ${{ secrets.META_APP_SECRET }}
           META_GRAPH_VERSION: ${{ secrets.META_GRAPH_VERSION }}
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
-        run: npm run run:scheduler
+        run: node ./scripts/scheduler.js

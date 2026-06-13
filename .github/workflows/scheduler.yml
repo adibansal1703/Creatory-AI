@@ -15,14 +15,12 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: creatory-ai/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        working-directory: creatory-ai
         run: npm ci
 
       - name: Run scheduler
-        working-directory: creatory-ai
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

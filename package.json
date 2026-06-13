@@ -10,8 +10,9 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "run:scheduler": "node ./scripts/scheduler.js",
-    "run:email-worker": "node ./scripts/email-worker.js"
+    "run:scheduler": "node --env-file=.env ./scripts/scheduler.js",
+    "run:scheduler:cron": "node --env-file=.env ./scripts/scheduler-cron.js",
+    "run:email-worker": "node --env-file=.env ./scripts/email-worker.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

@@ -2,10 +2,9 @@ import { getMetaConfig } from "@/lib/meta/config.server";
 
 const INSTAGRAM_SCOPES = [
   "instagram_basic",
+  "instagram_content_publish",
   "pages_show_list",
   "pages_read_engagement",
-  "pages_manage_metadata",
-  "business_management",
 ].join(",");
 
 type TokenResponse = {
@@ -153,7 +152,7 @@ function buildInstagramDiscoveryError(pages: FacebookPage[]): string {
     return [
       "No Facebook Pages were returned for your account.",
       "During login, grant access to all Pages when Facebook asks.",
-      "If your Page is in Meta Business Manager, ensure business_management is approved for this app.",
+      "If your Page is in Meta Business Manager, ensure your Facebook account is an Admin of that Page.",
       "The Facebook account you use must be an Admin of the Page linked to Instagram.",
     ].join(" ");
   }

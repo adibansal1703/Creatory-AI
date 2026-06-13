@@ -27,13 +27,20 @@ Open **SQL Editor** in Supabase Dashboard → paste → Run.
    - `${APP_URL}/**` (wildcard for your deployment origin)
 3. Customize email templates: Welcome, Confirm signup, Reset password.
 
-Register the Instagram callback URL (`META_REDIRECT_URI`) in the Meta Developer Console as well.
+Register `${APP_URL}/auth/instagram/callback` in the Meta Developer Console (Facebook Login → Valid OAuth Redirect URIs).
 
 ## RLS
 
 All user tables enforce `auth.uid() = user_id`. Service role bypasses RLS for scheduler and email worker scripts.
 
+## Storage
+
+Run `migrations/20260607000000_post_media_storage.sql` in the SQL Editor if not applied. This creates the public `post-media` bucket used for Instagram image uploads.
+
 ## Background workers
 
-- `npm run run:scheduler` — publishes scheduled posts
+- `npm run run:scheduler` — one-shot publish of due scheduled posts to Instagram via Meta Graph API
+- `npm run run:scheduler:cron` — local cron loop (every 60s by default)
 - `npm run run:email-worker` — sends queued emails
+
+For production scheduling, use GitHub Actions (`.github/workflows/scheduler.yml`) or your host's cron to run `npm run run:scheduler` every 1–5 minutes.

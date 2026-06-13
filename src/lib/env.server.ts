@@ -21,7 +21,7 @@ export function getAuthCallbackUrl(): string {
 }
 
 export function getMetaRedirectUri(): string {
-  return requireEnv("META_REDIRECT_URI");
+  return `${getServerAppUrl()}/auth/instagram/callback`;
 }
 
 export function getApiBaseUrl(): string {

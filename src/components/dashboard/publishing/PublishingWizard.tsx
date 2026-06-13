@@ -17,11 +17,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { fetchConnectedAccounts } from "@/lib/api/connected-accounts";
+import { uploadPostMedia } from "@/lib/api/post-media";
 import { publishMultiple, summarizeContent } from "@/lib/api/published-posts";
 import { saveDraft } from "@/lib/api/drafts";
 import {
   buildContentPayload,
   PUBLISHING_SESSION_KEY,
+  resolvePublicMediaUrl,
   type PublishingSession,
 } from "@/lib/publishing/content-summary";
 import { PLATFORMS, PLATFORM_LABELS, type PostPlatform } from "@/lib/types/database";
@@ -35,6 +37,7 @@ export function PublishingWizard() {
   const [selected, setSelected] = useState<PostPlatform[]>([]);
   const [fields, setFields] = useState<Record<string, string>>({});
   const [showAction, setShowAction] = useState(false);
+  const [uploadingMediaFor, setUploadingMediaFor] = useState<PostPlatform | null>(null);
 
   const { data: accounts } = useQuery({
     queryKey: ["connected-accounts"],
@@ -90,7 +93,28 @@ export function PublishingWizard() {
       toast.error("Add content for at least one selected platform.");
       return false;
     }
+
+    if (selected.includes("instagram") && !resolvePublicMediaUrl(payload.instagram?.media_url)) {
+      toast.error("Upload an image for Instagram before publishing or scheduling.");
+      return false;
+    }
+
     return true;
+  };
+
+  const handleMediaUpload = async (platform: PostPlatform, file?: File) => {
+    if (!file) return;
+
+    setUploadingMediaFor(platform);
+    try {
+      const publicUrl = await uploadPostMedia(file);
+      setField(`${platform}_media`, publicUrl);
+      toast.success("Media uploaded.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Media upload failed.");
+    } finally {
+      setUploadingMediaFor(null);
+    }
   };
 
   const continueToContent = () => {
@@ -281,20 +305,35 @@ export function PublishingWizard() {
                 </div>
               )}
               <div className="space-y-2">
-                <Label>Media</Label>
+                <Label>{platform === "instagram" ? "Image (required)" : "Media"}</Label>
                 <div className="glass rounded-xl border border-dashed border-border/60 p-4 text-sm text-muted-foreground">
-                  <p>Upload placeholder media for {PLATFORM_LABELS[platform]}.</p>
+                  <p>
+                    {platform === "instagram"
+                      ? "Upload a JPG or PNG. Instagram requires a public image URL to publish."
+                      : `Upload media for ${PLATFORM_LABELS[platform]}.`}
+                  </p>
                   <input
                     type="file"
+                    accept={platform === "instagram" ? "image/*" : undefined}
                     aria-label={`Upload media for ${PLATFORM_LABELS[platform]}`}
                     className="mt-3 w-full text-sm text-muted-foreground"
+                    disabled={uploadingMediaFor === platform}
                     onChange={(event) => {
                       const file = event.target.files?.[0];
-                      if (file) {
-                        setField(`${platform}_media`, file.name);
-                      }
+                      void handleMediaUpload(platform, file);
                     }}
                   />
+                  {uploadingMediaFor === platform && (
+                    <p className="mt-2 flex items-center gap-2 text-primary">
+                      <Loader2 className="size-4 animate-spin" />
+                      Uploading…
+                    </p>
+                  )}
+                  {fields[`${platform}_media`] && (
+                    <p className="mt-2 text-xs text-emerald-400 break-all">
+                      Ready: {fields[`${platform}_media`]}
+                    </p>
+                  )}
                 </div>
               </div>
               {!isPlatformConnected(platform) && (

@@ -36,6 +36,11 @@ export const completeInstagramOAuth = createServerFn({ method: "POST" })
     await verifyOAuthState(data.state, user.id);
 
     const connection = await completeInstagramOAuthFlow(data.code);
+    console.log("[Instagram OAuth] Account discovered:", {
+      accountName: connection.accountName,
+      externalAccountId: connection.externalAccountId,
+    });
+
     const admin = getSupabaseAdmin();
 
     const { data: saved, error } = await admin
@@ -58,9 +63,11 @@ export const completeInstagramOAuth = createServerFn({ method: "POST" })
       .single();
 
     if (error) {
+      console.error("[Instagram OAuth] Failed to save connected account:", error.message);
       throw new Error(error.message);
     }
 
+    console.log("[Instagram OAuth] Connected account saved:", saved.id);
     return saved;
   });
 

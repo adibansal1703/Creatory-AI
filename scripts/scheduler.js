@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { publishScheduledPost } from "./lib/instagram-publish.js";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -12,6 +13,10 @@ function assertEnv(variable) {
 
 assertEnv("SUPABASE_URL");
 assertEnv("SUPABASE_SERVICE_ROLE_KEY");
+assertEnv("META_APP_ID");
+assertEnv("META_APP_SECRET");
+assertEnv("META_GRAPH_VERSION");
+assertEnv("API_BASE_URL");
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: {
@@ -33,10 +38,10 @@ async function fetchReadyPosts() {
   return data ?? [];
 }
 
-async function markPostPublished(postId) {
+async function markPostPublished(postId, externalId) {
   const { error } = await supabase.rpc("mark_post_published", {
     post_id: postId,
-    external_id: null,
+    external_id: externalId,
   });
 
   if (error) {
@@ -68,13 +73,13 @@ async function markPostFailed(postId, message) {
   }
 }
 
-async function run() {
+export async function runScheduler() {
   console.log("Scheduler started: checking for ready posts...");
   const posts = await fetchReadyPosts();
 
   if (posts.length === 0) {
     console.log("No scheduled posts are ready to publish.");
-    return;
+    return { processed: 0, failures: 0 };
   }
 
   let failureCount = 0;
@@ -83,8 +88,9 @@ async function run() {
 
     try {
       await setSchedulerRunId(post.id);
-      await markPostPublished(post.id);
-      console.log(`Published scheduled post ${post.id}.`);
+      const externalPostId = await publishScheduledPost(post);
+      await markPostPublished(post.id, externalPostId);
+      console.log(`Published scheduled post ${post.id} (external id: ${externalPostId}).`);
     } catch (error) {
       failureCount += 1;
       const message = error instanceof Error ? error.message : String(error);
@@ -95,13 +101,24 @@ async function run() {
 
   if (failureCount > 0) {
     console.error(`${failureCount} scheduled post(s) failed.`);
-    process.exitCode = 1;
   } else {
     console.log("All ready scheduled posts processed successfully.");
   }
+
+  return { processed: posts.length, failures: failureCount };
 }
 
-run().catch((error) => {
-  console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
-});
+const isDirectRun = process.argv[1]?.endsWith("scheduler.js");
+
+if (isDirectRun) {
+  runScheduler()
+    .then(({ failures }) => {
+      if (failures > 0) {
+        process.exitCode = 1;
+      }
+    })
+    .catch((error) => {
+      console.error(error instanceof Error ? error.message : error);
+      process.exit(1);
+    });
+}

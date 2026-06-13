@@ -1,7 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
 import { completeInstagramOAuth } from "@/lib/api/instagram-oauth.functions";
 import { getSupabase } from "@/lib/supabase";
 
@@ -10,12 +9,19 @@ export const Route = createFileRoute("/auth/instagram/callback")({
   component: InstagramCallbackPage,
 });
 
+type SavedInstagramAccount = Awaited<ReturnType<typeof completeInstagramOAuth>>;
+
+const inflightCallbacks = new Map<string, Promise<SavedInstagramAccount>>();
+
+function redirectToConnectedAccounts() {
+  window.location.replace("/dashboard/accounts?instagram=connected");
+}
+
 function InstagramCallbackPage() {
-  const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
+    let mounted = true;
 
     async function run() {
       const searchParams = new URLSearchParams(window.location.search);
@@ -25,14 +31,12 @@ function InstagramCallbackPage() {
         searchParams.get("error_description") ?? searchParams.get("error");
 
       if (oauthError) {
-        if (!cancelled) {
-          setError(oauthError);
-        }
+        if (mounted) setError(oauthError);
         return;
       }
 
       if (!code || !state) {
-        if (!cancelled) {
+        if (mounted) {
           setError("Missing Instagram authorization code. Please try connecting again.");
         }
         return;
@@ -45,30 +49,33 @@ function InstagramCallbackPage() {
         } = await supabase.auth.getSession();
 
         if (!session?.access_token) {
-          if (!cancelled) {
+          if (mounted) {
             setError("You must be logged in to connect Instagram. Please log in and try again.");
           }
           return;
         }
 
-        const account = await completeInstagramOAuth({
-          data: {
-            accessToken: session.access_token,
-            code,
-            state,
-          },
-        });
+        const callbackKey = `${state}:${code}`;
+        let completion = inflightCallbacks.get(callbackKey);
 
-        if (cancelled) return;
+        if (!completion) {
+          completion = completeInstagramOAuth({
+            data: {
+              accessToken: session.access_token,
+              code,
+              state,
+            },
+          });
+          inflightCallbacks.set(callbackKey, completion);
+          completion.finally(() => {
+            inflightCallbacks.delete(callbackKey);
+          });
+        }
 
-        toast.success(`${account.account_name} connected successfully.`);
-        navigate({
-          to: "/dashboard/accounts",
-          search: { instagram: "connected" },
-          replace: true,
-        });
+        await completion;
+        redirectToConnectedAccounts();
       } catch (err) {
-        if (!cancelled) {
+        if (mounted) {
           setError(err instanceof Error ? err.message : "Instagram connection failed.");
         }
       }
@@ -76,9 +83,9 @@ function InstagramCallbackPage() {
 
     run();
     return () => {
-      cancelled = true;
+      mounted = false;
     };
-  }, [navigate]);
+  }, []);
 
   if (error) {
     return (

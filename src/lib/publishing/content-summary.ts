@@ -37,6 +37,21 @@ export function buildContentPayload(
   return payload;
 }
 
+export function buildInstagramCaption(payload: ContentPayload): string {
+  const ig = payload.instagram;
+  if (!ig) return "";
+  return [ig.caption, ig.hashtags, ig.location, ig.tagged_accounts].filter(Boolean).join("\n\n").trim();
+}
+
+export function resolvePublicMediaUrl(mediaUrl: string | null | undefined): string | null {
+  if (!mediaUrl?.trim()) return null;
+  const value = mediaUrl.trim();
+  if (value.startsWith("http://") || value.startsWith("https://")) {
+    return value;
+  }
+  return null;
+}
+
 export const PUBLISHING_SESSION_KEY = "creatory_publishing_draft";
 
 export type PublishingSession = {

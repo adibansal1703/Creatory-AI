@@ -6,6 +6,7 @@ import {
   Link2,
   Send,
   Settings,
+  Sparkles,
 } from "lucide-react";
 import logo from "@/assets/creatory-logo.png";
 import { UserAccountMenu } from "@/components/layout/UserAccountMenu";
@@ -13,6 +14,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/ai-content", label: "AI Content Ideas", icon: Sparkles, exact: true },
   { to: "/dashboard/publishing", label: "Multi-Platform Publishing", icon: Send, exact: false },
   { to: "/dashboard/scheduler", label: "Smart Scheduler", icon: CalendarClock, exact: false },
   { to: "/dashboard/accounts", label: "Connected Accounts", icon: Link2, exact: false },

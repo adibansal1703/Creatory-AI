@@ -59,3 +59,7 @@ export function getSupabaseAnonKey(): string {
 export function getSupabaseServiceRoleKey(): string {
   return requireEnv("SUPABASE_SERVICE_ROLE_KEY");
 }
+
+export function getGeminiApiKey(): string {
+  return requireEnv("GEMINI_API_KEY");
+}

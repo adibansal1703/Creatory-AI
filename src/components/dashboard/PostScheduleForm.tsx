@@ -62,7 +62,7 @@ export function PostScheduleForm({
           value={platform}
           onValueChange={(value) => setValue("platform", value as PostPlatform, { shouldValidate: true })}
         >
-          <SelectTrigger className="glass border-border/60 h-10">
+          <SelectTrigger>
             <SelectValue placeholder="Select platform" />
           </SelectTrigger>
           <SelectContent>
@@ -84,7 +84,7 @@ export function PostScheduleForm({
           id="content"
           placeholder="Write your post…"
           rows={6}
-          className="glass border-border/60 resize-y min-h-[140px]"
+          className="resize-y min-h-[140px]"
           {...register("content")}
         />
         {errors.content && <p className="text-xs text-destructive">{errors.content.message}</p>}
@@ -92,7 +92,7 @@ export function PostScheduleForm({
 
       <div className="space-y-2">
         <Label>Media (optional)</Label>
-        <div className="glass rounded-xl border border-dashed border-border/60 p-8 text-center">
+        <div className="rounded-lg border-2 border-dashed border-border p-8 text-center bg-secondary/30">
           <ImagePlus className="mx-auto size-8 text-muted-foreground/60" />
           <p className="mt-2 text-sm text-muted-foreground">Drag & drop or click to upload</p>
           <p className="mt-1 text-xs text-muted-foreground/80">Coming soon — images & video</p>
@@ -107,7 +107,6 @@ export function PostScheduleForm({
             id="scheduleDate"
             type="date"
             min={minScheduleDateString()}
-            className="glass border-border/60 h-10"
             {...register("scheduleDate")}
           />
           {errors.scheduleDate && (
@@ -119,7 +118,6 @@ export function PostScheduleForm({
           <Input
             id="scheduleTime"
             type="time"
-            className="glass border-border/60 h-10"
             {...register("scheduleTime")}
           />
           {errors.scheduleTime && (
@@ -131,7 +129,6 @@ export function PostScheduleForm({
       <div className="flex flex-wrap gap-3 pt-2">
         <Button
           type="submit"
-          className="bg-gradient-brand border-0 hover:opacity-90"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
@@ -144,7 +141,7 @@ export function PostScheduleForm({
           )}
         </Button>
         {onCancel && (
-          <Button type="button" variant="outline" className="glass" onClick={onCancel} disabled={isSubmitting}>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
             Cancel
           </Button>
         )}

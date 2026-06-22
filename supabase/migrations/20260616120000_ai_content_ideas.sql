@@ -7,6 +7,7 @@ CREATE TABLE public.ai_content_ideas (
   niche TEXT NOT NULL,
   target_audience TEXT NOT NULL,
   goal TEXT NOT NULL,
+  emotion TEXT NOT NULL DEFAULT 'Default',
   generated_content_json JSONB NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

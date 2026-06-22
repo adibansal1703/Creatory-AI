@@ -36,9 +36,23 @@ async function waitForInstagramMediaContainer({ containerId, accessToken, config
 }
 
 export async function publishInstagramPost({ externalAccountId, accessToken, contentPayload }) {
-  const imageUrl = resolvePublicMediaUrl(contentPayload?.instagram?.media_url);
+  console.log("[publishInstagramPost] contentPayload:", JSON.stringify(contentPayload, null, 2));
+  
+  if (!contentPayload?.instagram) {
+    throw new Error("Instagram content payload is missing from the post data.");
+  }
+  
+  const mediaUrl = contentPayload.instagram.media_url;
+  console.log("[publishInstagramPost] Raw media_url from payload:", mediaUrl);
+  
+  const imageUrl = resolvePublicMediaUrl(mediaUrl);
+  console.log("[publishInstagramPost] Resolved imageUrl:", imageUrl);
+  
   if (!imageUrl) {
-    throw new Error("Instagram posts require a publicly accessible image URL. Upload an image first.");
+    if (!mediaUrl) {
+      throw new Error("No image URL found in the post data. Please upload an image before scheduling or publishing.");
+    }
+    throw new Error(`Invalid image URL format: "${mediaUrl}". Image URL must start with http:// or https://`);
   }
 
   const caption = buildInstagramCaption(contentPayload);

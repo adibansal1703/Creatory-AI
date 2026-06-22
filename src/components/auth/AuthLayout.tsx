@@ -12,9 +12,7 @@ type AuthLayoutProps = {
 
 export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProps) {
   return (
-    <div className="relative min-h-screen bg-background text-foreground overflow-hidden">
-      <div className="absolute inset-0 bg-hero-glow pointer-events-none" />
-      <div className="absolute inset-0 grid-bg [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)] pointer-events-none" />
+    <div className="min-h-screen bg-background text-foreground">
 
       <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-16">
         <Link to="/" className="mb-10 flex items-center justify-center">
@@ -25,7 +23,7 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="glass w-full max-w-md rounded-3xl p-8 glow"
+          className="w-full max-w-md rounded-lg p-8 border border-border bg-card shadow-elevated"
         >
           <div className="text-center">
             <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>

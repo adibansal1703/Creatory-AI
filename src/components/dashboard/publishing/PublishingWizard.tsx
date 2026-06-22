@@ -88,15 +88,30 @@ export function PublishingWizard() {
 
   const validateContent = (): boolean => {
     const payload = getPayload();
+    console.log("[PublishingWizard] validateContent - payload:", JSON.stringify(payload, null, 2));
+    
     const hasContent = selected.some((p) => summarizeContent(p, payload).trim().length > 0);
     if (!hasContent) {
       toast.error("Add content for at least one selected platform.");
       return false;
     }
 
-    if (selected.includes("instagram") && !resolvePublicMediaUrl(payload.instagram?.media_url)) {
-      toast.error("Upload an image for Instagram before publishing or scheduling.");
-      return false;
+    if (selected.includes("instagram")) {
+      const mediaUrl = payload.instagram?.media_url;
+      console.log("[PublishingWizard] validateContent - Instagram media_url:", mediaUrl);
+      
+      if (!mediaUrl) {
+        toast.error("No image selected. Instagram posts require an image.");
+        return false;
+      }
+      
+      const resolvedUrl = resolvePublicMediaUrl(mediaUrl);
+      if (!resolvedUrl) {
+        toast.error(`Invalid image URL format: "${mediaUrl}". Please upload a valid image.`);
+        return false;
+      }
+      
+      console.log("[PublishingWizard] validateContent - Instagram image URL validated:", resolvedUrl);
     }
 
     return true;
@@ -108,9 +123,11 @@ export function PublishingWizard() {
     setUploadingMediaFor(platform);
     try {
       const publicUrl = await uploadPostMedia(file);
+      console.log("[PublishingWizard] Media uploaded successfully for", platform, "URL:", publicUrl);
       setField(`${platform}_media`, publicUrl);
       toast.success("Media uploaded.");
     } catch (error) {
+      console.error("[PublishingWizard] Media upload failed for", platform, error);
       toast.error(error instanceof Error ? error.message : "Media upload failed.");
     } finally {
       setUploadingMediaFor(null);
@@ -138,11 +155,14 @@ export function PublishingWizard() {
 
   const handleSchedule = () => {
     if (!validateContent()) return;
+    const payload = getPayload();
+    console.log("[PublishingWizard] handleSchedule - payload:", JSON.stringify(payload, null, 2));
     const session: PublishingSession = {
       platforms: selected,
-      contentPayload: getPayload(),
+      contentPayload: payload,
     };
     sessionStorage.setItem(PUBLISHING_SESSION_KEY, JSON.stringify(session));
+    console.log("[PublishingWizard] Session stored in sessionStorage");
     setShowAction(false);
     navigate({ to: "/dashboard/scheduler" });
   };
@@ -158,11 +178,11 @@ export function PublishingWizard() {
       </div>
 
       {step === 1 && (
-        <div className="glass rounded-2xl p-6 space-y-4 border border-border/60">
+        <div className="rounded-lg p-6 space-y-4 border border-border bg-card shadow-subtle">
           <h2 className="font-semibold">Select platforms</h2>
           <p className="text-sm text-muted-foreground">
             Select where this post should go. Connect accounts in{" "}
-            <Link to="/dashboard/accounts" className="text-primary underline">
+            <Link to="/dashboard/accounts" className="text-primary underline" search={{ reason: undefined, instagram: undefined }}>
               Connected Accounts
             </Link>{" "}
             to publish immediately.
@@ -174,10 +194,10 @@ export function PublishingWizard() {
               return (
                 <label
                   key={platform}
-                  className={`flex items-center gap-3 rounded-xl border p-4 cursor-pointer transition-colors ${
+                  className={`flex items-center gap-3 rounded-sm border-2 p-4 cursor-pointer transition-all duration-200 ${
                     checked
-                      ? "border-primary/50 bg-primary/10"
-                      : "border-border/60 hover:border-primary/30"
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/50"
                   }`}
                 >
                   <Checkbox
@@ -195,7 +215,6 @@ export function PublishingWizard() {
             })}
           </div>
           <Button
-            className="bg-gradient-brand border-0"
             disabled={selected.length === 0}
             onClick={continueToContent}
           >
@@ -205,7 +224,7 @@ export function PublishingWizard() {
       )}
 
       {step === 2 && (
-        <div className="glass rounded-2xl p-6 space-y-6 border border-border/60">
+        <div className="rounded-lg p-6 space-y-6 border border-border bg-card shadow-subtle">
           <h2 className="font-semibold">Create content</h2>
           {selected.map((platform) => (
             <div key={platform} className="space-y-4 pb-4 border-b border-border/40 last:border-0">
@@ -215,7 +234,6 @@ export function PublishingWizard() {
                   <div className="space-y-2">
                     <Label>Caption</Label>
                     <Textarea
-                      className="glass border-border/60"
                       value={fields[`${platform}_caption`] ?? ""}
                       onChange={(e) => setField(`${platform}_caption`, e.target.value)}
                     />
@@ -224,7 +242,6 @@ export function PublishingWizard() {
                     <div className="space-y-2">
                       <Label>Hashtags</Label>
                       <Input
-                        className="glass border-border/60"
                         placeholder="#creatory #ai"
                         value={fields[`${platform}_hashtags`] ?? ""}
                         onChange={(e) => setField(`${platform}_hashtags`, e.target.value)}
@@ -233,7 +250,6 @@ export function PublishingWizard() {
                     <div className="space-y-2">
                       <Label>Location</Label>
                       <Input
-                        className="glass border-border/60"
                         placeholder="Mumbai, India"
                         value={fields[`${platform}_location`] ?? ""}
                         onChange={(e) => setField(`${platform}_location`, e.target.value)}
@@ -243,7 +259,6 @@ export function PublishingWizard() {
                   <div className="space-y-2">
                     <Label>Tagged accounts</Label>
                     <Input
-                      className="glass border-border/60"
                       placeholder="@brand, @creator"
                       value={fields[`${platform}_tagged_accounts`] ?? ""}
                       onChange={(e) => setField(`${platform}_tagged_accounts`, e.target.value)}
@@ -256,7 +271,6 @@ export function PublishingWizard() {
                   <div className="space-y-2">
                     <Label>Title</Label>
                     <Input
-                      className="glass border-border/60"
                       value={fields[`${platform}_title`] ?? ""}
                       onChange={(e) => setField(`${platform}_title`, e.target.value)}
                     />
@@ -264,7 +278,6 @@ export function PublishingWizard() {
                   <div className="space-y-2">
                     <Label>Description</Label>
                     <Textarea
-                      className="glass border-border/60"
                       value={fields[`${platform}_description`] ?? ""}
                       onChange={(e) => setField(`${platform}_description`, e.target.value)}
                     />
@@ -272,7 +285,6 @@ export function PublishingWizard() {
                   <div className="space-y-2">
                     <Label>Tags</Label>
                     <Input
-                      className="glass border-border/60"
                       placeholder="ai, marketing, content"
                       value={fields[`${platform}_tags`] ?? ""}
                       onChange={(e) => setField(`${platform}_tags`, e.target.value)}
@@ -284,7 +296,6 @@ export function PublishingWizard() {
                 <div className="space-y-2">
                   <Label>Post content</Label>
                   <Textarea
-                    className="glass border-border/60"
                     value={fields[`${platform}_content`] ?? ""}
                     onChange={(e) => setField(`${platform}_content`, e.target.value)}
                   />
@@ -294,7 +305,6 @@ export function PublishingWizard() {
                 <div className="space-y-2">
                   <Label>Post content</Label>
                   <Textarea
-                    className="glass border-border/60"
                     maxLength={X_CHAR_LIMIT}
                     value={fields[`${platform}_content`] ?? ""}
                     onChange={(e) => setField(`${platform}_content`, e.target.value)}
@@ -306,7 +316,7 @@ export function PublishingWizard() {
               )}
               <div className="space-y-2">
                 <Label>{platform === "instagram" ? "Image (required)" : "Media"}</Label>
-                <div className="glass rounded-xl border border-dashed border-border/60 p-4 text-sm text-muted-foreground">
+                <div className="rounded-sm border-2 border-dashed border-border p-4 text-sm text-muted-foreground bg-secondary/30">
                   <p>
                     {platform === "instagram"
                       ? "Upload a JPG or PNG. Instagram requires a public image URL to publish."
@@ -337,25 +347,24 @@ export function PublishingWizard() {
                 </div>
               </div>
               {!isPlatformConnected(platform) && (
-                <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+                <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
                   <p>Please connect your account before creating content for {PLATFORM_LABELS[platform]}.</p>
-                  <Button variant="outline" size="sm" className="mt-3 glass" asChild>
-                    <Link to="/dashboard/accounts">Connect account</Link>
+                  <Button variant="outline" size="sm" className="mt-3" asChild>
+                    <Link to="/dashboard/accounts" search={{ reason: undefined, instagram: undefined }}>Connect account</Link>
                   </Button>
                 </div>
               )}
             </div>
           ))}
           <div className="flex flex-wrap gap-3">
-            <Button variant="outline" className="glass" onClick={() => setStep(1)}>
+            <Button variant="outline" onClick={() => setStep(1)}>
               Back
             </Button>
-            <Button className="bg-gradient-brand border-0" onClick={continueToAction}>
+            <Button onClick={continueToAction}>
               Continue
             </Button>
             <Button
               variant="outline"
-              className="glass"
               disabled={selected.length === 0 || saveDraftMutation.isPending}
               onClick={async () => {
                 if (selected.length === 0) {
@@ -383,7 +392,7 @@ export function PublishingWizard() {
       )}
 
       <Dialog open={showAction} onOpenChange={setShowAction}>
-        <DialogContent className="glass border-border/60">
+        <DialogContent className="bg-card border-border shadow-medium">
           <DialogHeader>
             <DialogTitle>What would you like to do?</DialogTitle>
             <DialogDescription>
@@ -392,7 +401,7 @@ export function PublishingWizard() {
           </DialogHeader>
           <div className="grid gap-3">
             <Button
-              className="bg-gradient-brand border-0 h-11"
+              className="h-11"
               disabled={publishMutation.isPending}
               onClick={handlePublishNow}
             >
@@ -404,7 +413,7 @@ export function PublishingWizard() {
                 "Publish Now"
               )}
             </Button>
-            <Button variant="outline" className="glass h-11" onClick={handleSchedule}>
+            <Button variant="outline" className="h-11" onClick={handleSchedule}>
               Schedule Post
             </Button>
           </div>

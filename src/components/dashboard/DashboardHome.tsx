@@ -110,7 +110,7 @@ export function DashboardHome() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((card) => (
           <Link key={card.label} to={card.href}>
-            <Card className="glass border-border/60 hover:border-primary/30 transition-colors h-full">
+            <Card className="hover:border-primary/50 transition-all duration-200 hover:shadow-medium h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {card.label}
@@ -123,7 +123,7 @@ export function DashboardHome() {
                 ) : stats.isError ? (
                   <span className="text-sm text-destructive">Error loading</span>
                 ) : (
-                  <span className="text-3xl font-semibold">{card.value ?? 0}</span>
+                  <span className="text-3xl font-medium">{card.value ?? 0}</span>
                 )}
               </CardContent>
             </Card>
@@ -132,8 +132,8 @@ export function DashboardHome() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="glass rounded-2xl p-5 border border-border/60">
-          <h2 className="font-semibold mb-4">Latest Scheduled Posts</h2>
+        <section className="rounded-lg p-6 border border-border bg-card shadow-subtle">
+          <h2 className="font-medium text-lg mb-4">Latest Scheduled Posts</h2>
           {recentScheduled.isLoading && (
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -156,12 +156,12 @@ export function DashboardHome() {
           )}
           <ul className="space-y-3">
             {recentScheduled.data?.map((post) => (
-              <li key={post.id} className="rounded-xl bg-secondary/30 p-3 space-y-2">
+              <li key={post.id} className="rounded-sm bg-secondary/50 p-4 space-y-2 border border-border">
                 <div className="flex flex-wrap items-center gap-2">
                   <PlatformBadge platform={post.platform} />
                   <StatusBadge status={post.status} />
                 </div>
-                <p className="text-sm line-clamp-2">{post.content}</p>
+                <p className="text-sm line-clamp-2 leading-relaxed">{post.content}</p>
                 <p className="text-xs text-muted-foreground">
                   {formatScheduledDateTime(post.scheduled_time)}
                 </p>
@@ -170,8 +170,8 @@ export function DashboardHome() {
           </ul>
         </section>
 
-        <section className="glass rounded-2xl p-5 border border-border/60">
-          <h2 className="font-semibold mb-4">Latest Published Posts</h2>
+        <section className="rounded-lg p-6 border border-border bg-card shadow-subtle">
+          <h2 className="font-medium text-lg mb-4">Latest Published Posts</h2>
           {recentPublished.isLoading && (
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -189,9 +189,9 @@ export function DashboardHome() {
           )}
           <ul className="space-y-3">
             {recentPublished.data?.map((post) => (
-              <li key={post.id} className="rounded-xl bg-secondary/30 p-3 space-y-2">
+              <li key={post.id} className="rounded-sm bg-secondary/50 p-4 space-y-2 border border-border">
                 <PlatformBadge platform={post.platform} />
-                <p className="text-sm line-clamp-2">{post.content}</p>
+                <p className="text-sm line-clamp-2 leading-relaxed">{post.content}</p>
                 <p className="text-xs text-muted-foreground">
                   {formatScheduledDateTime(post.published_at)}
                 </p>
@@ -202,13 +202,13 @@ export function DashboardHome() {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Button className="bg-gradient-brand border-0 hover:opacity-90" asChild>
+        <Button asChild>
           <Link to="/dashboard/publishing">
             <CalendarPlus className="size-4" />
             Create new post
           </Link>
         </Button>
-        <Button variant="outline" className="glass" asChild>
+        <Button variant="outline" asChild>
           <Link to="/dashboard/scheduler">View scheduler</Link>
         </Button>
       </div>

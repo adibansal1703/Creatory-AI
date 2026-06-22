@@ -144,20 +144,19 @@ export function SettingsPage() {
         <p className="mt-1 text-muted-foreground">Manage your profile and preferences</p>
       </div>
 
-      <div className="glass rounded-2xl p-6 border border-border/60 space-y-4">
+      <div className="rounded-lg p-6 border border-border bg-card shadow-subtle space-y-4">
         <div className="space-y-2">
           <Label>Email</Label>
-          <Input value={user?.email ?? ""} disabled className="glass border-border/60" />
+          <Input value={user?.email ?? ""} disabled />
         </div>
         <div className="space-y-2">
           <Label>Change email</Label>
-          <Input value={newEmail} onChange={(e) => setNewEmail(e.target.value)} className="glass border-border/60" />
+          <Input value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
           <Input
             type="password"
             placeholder="Current password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            className="glass border-border/60"
           />
           <p className="text-xs text-muted-foreground">
             Enter your current password to confirm email or password changes.
@@ -177,13 +176,12 @@ export function SettingsPage() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             disabled={loading}
-            className="glass border-border/60"
           />
         </div>
         <div className="space-y-2">
           <Label>Default timezone</Label>
           <Select value={timezone} onValueChange={setTimezone} disabled={loading}>
-            <SelectTrigger className="glass border-border/60">
+            <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -196,7 +194,6 @@ export function SettingsPage() {
           </Select>
         </div>
         <Button
-          className="bg-gradient-brand border-0"
           disabled={saveMutation.isPending || loading}
           onClick={() => saveMutation.mutate()}
         >
@@ -205,7 +202,7 @@ export function SettingsPage() {
         <div className="border-t pt-4 mt-4 space-y-4">
           <div>
             <Label>Change password</Label>
-            <Input type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="glass border-border/60" />
+            <Input type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
             <div className="flex gap-2 mt-2">
               <Button onClick={() => handleChangePassword()} disabled={!newPassword || !currentPassword}>
                 Change password

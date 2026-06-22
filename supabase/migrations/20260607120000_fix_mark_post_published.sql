@@ -1,4 +1,3 @@
--- Replace legacy mark_post_published (referenced removed n8n_job_id column)
 CREATE OR REPLACE FUNCTION public.mark_post_published(
   post_id UUID,
   external_id TEXT DEFAULT NULL

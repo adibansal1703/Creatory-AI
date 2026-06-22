@@ -35,6 +35,11 @@ async function fetchReadyPosts() {
     throw new Error(`Failed to fetch ready posts: ${error.message}`);
   }
 
+  console.log("[fetchReadyPosts] Fetched posts:", data?.length ?? 0);
+  data?.forEach((post) => {
+    console.log("[fetchReadyPosts] Post ID:", post.id, "Platform:", post.platform, "Content payload:", JSON.stringify(post.content_payload, null, 2));
+  });
+
   return data ?? [];
 }
 

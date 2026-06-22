@@ -11,8 +11,6 @@ export function Hero() {
 
   return (
     <section className="relative pt-36 pb-20 overflow-hidden">
-      <div className="absolute inset-0 bg-hero-glow pointer-events-none" />
-      <div className="absolute inset-0 grid-bg [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)] pointer-events-none" />
 
       <div className="relative mx-auto max-w-6xl px-4 text-center">
         <motion.h1
@@ -22,7 +20,7 @@ export function Hero() {
           className="text-5xl md:text-7xl font-semibold tracking-tight leading-[1.05]"
         >
           Your AI Content Team.<br />
-          <span className="text-gradient">Create once. Publish everywhere.</span>
+          <span className="text-primary">Create once. Publish everywhere.</span>
         </motion.h1>
 
         <motion.p
@@ -56,7 +54,7 @@ export function Hero() {
                 to="/dashboard"
                 className={cn(
                   buttonVariants({ size: "lg" }),
-                  "bg-gradient-brand border-0 hover:opacity-90 h-12 px-6 text-base inline-flex items-center",
+                  "h-12 px-6 text-base inline-flex items-center",
                 )}
               >
                 <LayoutDashboard className="mr-2 size-5" />
@@ -68,7 +66,7 @@ export function Hero() {
                 to="/signup"
                 className={cn(
                   buttonVariants({ size: "lg" }),
-                  "bg-gradient-brand border-0 hover:opacity-90 h-12 px-6 text-base inline-flex items-center",
+                  "h-12 px-6 text-base inline-flex items-center",
                 )}
               >
                 Start free trial <ArrowRight className="ml-1 size-4" />
@@ -88,14 +86,14 @@ export function Hero() {
           transition={{ duration: 0.9, delay: 0.35 }}
           className="relative mt-16"
         >
-          <div className="absolute -inset-8 bg-gradient-brand opacity-20 blur-3xl rounded-full" />
-          <div className="relative glass rounded-3xl p-2 glow">
+          <div className="absolute -inset-8 bg-primary/10 blur-3xl rounded-full" />
+          <div className="relative rounded-lg p-2 shadow-elevated">
             <img
               src={dashboardImg}
               alt="Creatory AI dashboard preview"
               width={1600}
               height={1100}
-              className="rounded-2xl w-full h-auto"
+              className="rounded w-full h-auto"
             />
           </div>
         </motion.div>

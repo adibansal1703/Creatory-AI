@@ -11,7 +11,7 @@ export function Navbar() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 pointer-events-none">
       <div className="mx-auto mt-4 max-w-6xl px-4 pointer-events-auto">
-        <nav className="glass rounded-2xl flex items-center justify-between px-5 py-3 relative gap-3">
+        <nav className="rounded-lg flex items-center justify-between px-5 py-3 relative gap-3 border border-border bg-card shadow-subtle">
           <Link to="/" className="flex items-center gap-2 shrink-0 relative z-10">
             <img src={logo} alt="Creatory AI" className="h-9 w-auto" />
           </Link>
@@ -35,7 +35,7 @@ export function Navbar() {
                   to="/dashboard"
                   className={cn(
                     buttonVariants({ size: "sm" }),
-                    "bg-gradient-brand border-0 hover:opacity-90 text-primary-foreground",
+                    "text-primary-foreground",
                   )}
                 >
                   Dashboard
@@ -46,6 +46,7 @@ export function Navbar() {
               <>
                 <Link
                   to="/login"
+                  search={{ verified: false, verify: undefined }}
                   className={cn(
                     buttonVariants({ variant: "ghost", size: "sm" }),
                     "hidden sm:inline-flex",
@@ -55,9 +56,10 @@ export function Navbar() {
                 </Link>
                 <Link
                   to="/signup"
+                  search={{ pending: false }}
                   className={cn(
                     buttonVariants({ size: "sm" }),
-                    "bg-gradient-brand border-0 hover:opacity-90 text-primary-foreground",
+                    "text-primary-foreground",
                   )}
                 >
                   Create account

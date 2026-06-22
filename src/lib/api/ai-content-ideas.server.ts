@@ -1,5 +1,5 @@
-import { generateCaption, generateContentIdeas } from "@/lib/ai/gemini";
-import { supabase } from "@/lib/supabase";
+import { generateCaption, generateContentIdeas } from "@/lib/ai/gemini.server";
+import { getSupabaseAdmin } from "@/lib/supabase/admin.server";
 import type {
   AIContentIdeasRequest,
   AIContentIdeasResponse,
@@ -8,17 +8,8 @@ import type {
   AIContentIdeaRecord,
 } from "@/lib/types/ai";
 
-async function requireUserId(): Promise<string> {
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-  if (error || !user) throw new Error("You must be logged in.");
-  return user.id;
-}
-
-export async function fetchAIContentIdeas(): Promise<AIContentIdeaRecord[]> {
-  const userId = await requireUserId();
+export async function fetchAIContentIdeas(userId: string): Promise<AIContentIdeaRecord[]> {
+  const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("ai_content_ideas")
     .select("*")
@@ -30,19 +21,21 @@ export async function fetchAIContentIdeas(): Promise<AIContentIdeaRecord[]> {
 }
 
 export async function generateAndSaveContentIdeas(
-  request: AIContentIdeasRequest
+  request: AIContentIdeasRequest & { userId: string }
 ): Promise<AIContentIdeasResponse> {
-  const userId = await requireUserId();
+  const { userId, ...aiRequest } = request;
   
   // Generate ideas using Gemini
-  const response = await generateContentIdeas(request);
+  const response = await generateContentIdeas(aiRequest);
 
-  // Save to database
+  // Save to database using admin client (bypasses RLS)
+  const supabase = getSupabaseAdmin();
   const { error } = await supabase.from("ai_content_ideas").insert({
     user_id: userId,
     niche: request.niche,
     target_audience: request.targetAudience,
     goal: request.goal,
+    emotion: request.emotion,
     generated_content_json: response,
   });
 
@@ -57,8 +50,12 @@ export async function generateCaptionForIdea(
   return generateCaption(request);
 }
 
-export async function deleteAIContentIdea(id: string): Promise<void> {
-  await requireUserId();
-  const { error } = await supabase.from("ai_content_ideas").delete().eq("id", id);
+export async function deleteAIContentIdea(userId: string, id: string): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase
+    .from("ai_content_ideas")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", userId);
   if (error) throw new Error(error.message);
 }

@@ -38,13 +38,13 @@ export function UserAccountMenu({ className, compact = false }: UserAccountMenuP
         <Button
           variant="ghost"
           className={cn(
-            "h-auto gap-2 px-2 py-1.5 hover:bg-secondary/60",
+            "h-auto gap-2 px-2 py-1.5 hover:bg-secondary",
             compact ? "px-1.5" : "pl-1.5 pr-2",
             className,
           )}
         >
-          <Avatar className="size-8 border border-border/60">
-            <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
+          <Avatar className="size-8 border border-border">
+            <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -59,7 +59,7 @@ export function UserAccountMenu({ className, compact = false }: UserAccountMenuP
           <ChevronDown className="size-4 text-muted-foreground hidden sm:block shrink-0" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 glass border-border/60">
+      <DropdownMenuContent align="end" className="w-56 bg-card border-border shadow-medium">
         <DropdownMenuLabel className="font-normal">
           <p className="text-sm font-medium leading-none">{displayName}</p>
           <p className="mt-1 text-xs text-muted-foreground truncate">{email}</p>

@@ -45,7 +45,7 @@ type ScheduledPostsSectionProps = {
 
 function PostCardSkeleton() {
   return (
-    <div className="glass rounded-2xl p-5 space-y-3">
+    <div className="rounded-lg p-5 space-y-3 border border-border bg-card shadow-subtle">
       <Skeleton className="h-5 w-24" />
       <Skeleton className="h-4 w-full" />
       <Skeleton className="h-4 w-3/4" />
@@ -106,7 +106,7 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
               Manage and reschedule your upcoming social content.
             </p>
           </div>
-          <Button className="bg-gradient-brand border-0 hover:opacity-90 shrink-0" asChild>
+          <Button shrink-0 asChild>
             <Link to="/dashboard/publishing">
               <CalendarPlus className="size-4" />
               Create post
@@ -129,13 +129,13 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
         )}
 
         {isError && (
-          <div className="glass rounded-2xl p-8 text-center border border-destructive/30">
+          <div className="rounded-lg p-8 text-center border border-destructive/30 bg-card shadow-subtle">
             <AlertCircle className="mx-auto size-10 text-destructive" />
             <p className="mt-3 font-medium">Could not load scheduled posts</p>
             <p className="mt-1 text-sm text-muted-foreground">
               {error instanceof Error ? error.message : "Something went wrong"}
             </p>
-            <Button variant="outline" className="mt-4 glass" onClick={() => refetch()}>
+            <Button variant="outline" className="mt-4" onClick={() => refetch()}>
               Try again
             </Button>
           </div>
@@ -163,7 +163,6 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
                     placeholder="Search by content or platform"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="glass border-border/60"
                   />
                 </div>
                 <div className="space-y-2">
@@ -174,7 +173,7 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
                     value={platformFilter}
                     onValueChange={(value) => setPlatformFilter(value as "all" | PostPlatform)}
                   >
-                    <SelectTrigger id="scheduled-post-platform" className="glass border-border/60">
+                    <SelectTrigger id="scheduled-post-platform">
                       <SelectValue placeholder="All platforms" />
                     </SelectTrigger>
                     <SelectContent>
@@ -195,7 +194,7 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
                     value={statusFilter}
                     onValueChange={(value) => setStatusFilter(value as "all" | PostStatus)}
                   >
-                    <SelectTrigger id="scheduled-post-status" className="glass border-border/60">
+                    <SelectTrigger id="scheduled-post-status">
                       <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
                     <SelectContent>
@@ -218,7 +217,6 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
                 <Button
                   variant="outline"
                   size="sm"
-                  className="glass"
                   onClick={() => {
                     clearFilters();
                     refetch();
@@ -241,7 +239,7 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
                 {filteredPosts.map((post) => (
                   <article
                     key={post.id}
-                    className="glass rounded-2xl p-5 flex flex-col gap-4 hover:border-primary/30 transition-colors"
+                    className="rounded-lg p-5 flex flex-col gap-4 border border-border bg-card shadow-subtle hover:border-primary/50 transition-all duration-200"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <PlatformBadge platform={post.platform} />
@@ -270,7 +268,6 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
                       <Button
                         variant="outline"
                         size="sm"
-                        className="glass"
                         onClick={() => setEditingPost(post)}
                       >
                         <Pencil className="size-3.5" />
@@ -279,7 +276,7 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
                       <Button
                         variant="outline"
                         size="sm"
-                        className="glass text-destructive hover:text-destructive"
+                        className="text-destructive hover:text-destructive"
                         onClick={() => setDeletingPost(post)}
                       >
                         <Trash2 className="size-3.5" />
@@ -301,7 +298,7 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
       />
 
       <AlertDialog open={Boolean(deletingPost)} onOpenChange={(open) => !open && setDeletingPost(null)}>
-        <AlertDialogContent className="glass border-border/60">
+        <AlertDialogContent className="bg-card border-border shadow-medium">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete scheduled post?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -309,7 +306,7 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="glass">Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleDelete}

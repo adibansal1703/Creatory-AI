@@ -111,13 +111,13 @@ export function ConnectedAccountsPage() {
       </div>
 
       {isError && (
-        <div className="glass rounded-xl p-4 text-sm text-destructive">
+        <div className="rounded-lg p-4 text-sm text-destructive border border-destructive/30 bg-card shadow-subtle">
           Failed to load accounts. <button className="underline" onClick={() => refetch()}>Retry</button>
         </div>
       )}
 
       {!isLoading && totalConnected === 0 && (
-        <div className="glass rounded-2xl p-6 border border-border/60 text-sm text-muted-foreground">
+        <div className="rounded-lg p-6 border border-border bg-card shadow-subtle text-sm text-muted-foreground">
           <p className="font-medium">No connected accounts yet.</p>
           <p className="mt-2">
             Use the plus button on any platform card below to add your first account.
@@ -127,7 +127,7 @@ export function ConnectedAccountsPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {groupedPlatforms.map(({ platform, accounts }) => (
-          <Card key={platform} className="glass border-border/60">
+          <Card key={platform} className="shadow-subtle">
             <CardHeader className="flex items-start justify-between gap-3 pb-3">
               <div>
                 <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -139,7 +139,6 @@ export function ConnectedAccountsPage() {
               </div>
               <Button
                 size="sm"
-                className="bg-gradient-brand border-0 hover:opacity-90"
                 disabled={platform === "instagram" && startingInstagramOAuth}
                 onClick={() => handleConnectClick(platform)}
               >
@@ -172,7 +171,7 @@ export function ConnectedAccountsPage() {
                     return (
                       <div
                         key={account.id}
-                        className="rounded-2xl border border-border/60 bg-secondary/30 p-4"
+                        className="rounded-sm border border-border bg-secondary/50 p-4"
                       >
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                           <div className="space-y-1 min-w-0">
@@ -190,7 +189,7 @@ export function ConnectedAccountsPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="glass shrink-0"
+                            className="shrink-0"
                             disabled={disconnectMutation.isPending}
                             onClick={() => disconnectMutation.mutate(account.id)}
                           >
@@ -220,7 +219,7 @@ export function ConnectedAccountsPage() {
       </div>
 
       <Dialog open={connecting !== null} onOpenChange={(open) => !open && setConnecting(null)}>
-        <DialogContent className="glass border-border/60 max-w-lg">
+        <DialogContent className="bg-card border-border shadow-medium max-w-lg">
           <DialogHeader>
             <DialogTitle>Connect {connecting ? PLATFORM_LABELS[connecting] : "account"}</DialogTitle>
             <DialogDescription>
@@ -233,13 +232,12 @@ export function ConnectedAccountsPage() {
               <Input
                 id="accountName"
                 placeholder="@yourhandle"
-                className="glass border-border/60"
                 value={accountName}
                 onChange={(e) => setAccountName(e.target.value)}
               />
             </div>
             <Button
-              className="w-full bg-gradient-brand border-0"
+              className="w-full"
               disabled={!accountName.trim() || connectMutation.isPending || !connecting}
               onClick={() =>
                 connecting &&

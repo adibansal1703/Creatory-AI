@@ -42,10 +42,14 @@ export function SmartSchedulerPage() {
 
   useEffect(() => {
     const raw = sessionStorage.getItem(PUBLISHING_SESSION_KEY);
+    console.log("[SmartSchedulerPage] Reading session from sessionStorage:", raw ? "Found" : "Not found");
     if (raw) {
       try {
-        setSession(JSON.parse(raw) as PublishingSession);
-      } catch {
+        const parsed = JSON.parse(raw) as PublishingSession;
+        console.log("[SmartSchedulerPage] Session parsed successfully:", parsed);
+        setSession(parsed);
+      } catch (error) {
+        console.error("[SmartSchedulerPage] Failed to parse session:", error);
         setSession(null);
       }
     }
@@ -67,19 +71,34 @@ export function SmartSchedulerPage() {
 
   const scheduleMutation = useMutation({
     mutationFn: async () => {
-      if (!session?.platforms.length) throw new Error("No content to schedule");
+      console.log("[SmartSchedulerPage] scheduleMutation called");
+      console.log("[SmartSchedulerPage] Session:", JSON.stringify(session, null, 2));
+      if (!session?.platforms.length) {
+        console.error("[SmartSchedulerPage] No platforms in session");
+        throw new Error("No content to schedule");
+      }
       const scheduledTime = combineDateAndTime(scheduleDate, scheduleTime);
+      console.log("[SmartSchedulerPage] Scheduled time:", scheduledTime.toISOString());
       if (scheduledTime.getTime() <= Date.now()) {
+        console.error("[SmartSchedulerPage] Scheduled time is in the past");
         throw new Error("Scheduled time must be in the future");
       }
+      console.log("[SmartSchedulerPage] Calling scheduleMultiple with:", {
+        platforms: session.platforms,
+        contentPayload: session.contentPayload,
+        scheduledTime: scheduledTime.toISOString(),
+        timezone,
+      });
       await scheduleMultiple({
         platforms: session.platforms,
         contentPayload: session.contentPayload,
         scheduledTime: scheduledTime.toISOString(),
         timezone,
       });
+      console.log("[SmartSchedulerPage] scheduleMultiple completed successfully");
     },
     onSuccess: () => {
+      console.log("[SmartSchedulerPage] Schedule successful, cleaning up session");
       sessionStorage.removeItem(PUBLISHING_SESSION_KEY);
       queryClient.invalidateQueries({ queryKey: scheduledPostsQueryKey });
       queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
@@ -87,7 +106,10 @@ export function SmartSchedulerPage() {
       setConfirmed(true);
       toast.success("Your post has been scheduled successfully.");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      console.error("[SmartSchedulerPage] Schedule failed:", e);
+      toast.error(e.message);
+    },
   });
 
   if (confirmed) {
@@ -99,10 +121,10 @@ export function SmartSchedulerPage() {
           You will receive an email confirmation. Your post will publish at the scheduled time.
         </p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <Button className="bg-gradient-brand border-0" asChild>
+          <Button asChild>
             <Link to="/dashboard">Back to Dashboard</Link>
           </Button>
-          <Button variant="outline" className="glass" asChild>
+          <Button variant="outline" asChild>
             <Link to="/dashboard/publishing">Create another post</Link>
           </Button>
         </div>
@@ -118,7 +140,7 @@ export function SmartSchedulerPage() {
       </div>
 
       {session && (
-        <div className="glass rounded-2xl p-6 border border-border/60 max-w-lg space-y-4">
+        <div className="rounded-lg p-6 border border-border bg-card shadow-subtle max-w-lg space-y-4">
           <p className="text-sm text-muted-foreground">
             Scheduling for:{" "}
             <span className="text-foreground font-medium">{session.platforms.join(", ")}</span>
@@ -131,7 +153,6 @@ export function SmartSchedulerPage() {
                 min={minScheduleDateString()}
                 value={scheduleDate}
                 onChange={(e) => setScheduleDate(e.target.value)}
-                className="glass border-border/60"
               />
             </div>
             <div className="space-y-2">
@@ -140,14 +161,13 @@ export function SmartSchedulerPage() {
                 type="time"
                 value={scheduleTime}
                 onChange={(e) => setScheduleTime(e.target.value)}
-                className="glass border-border/60"
               />
             </div>
           </div>
           <div className="space-y-2">
             <Label>Timezone</Label>
             <Select value={timezone} onValueChange={setTimezone}>
-              <SelectTrigger className="glass border-border/60">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -160,7 +180,7 @@ export function SmartSchedulerPage() {
             </Select>
           </div>
           <Button
-            className="w-full bg-gradient-brand border-0"
+            className="w-full"
             disabled={scheduleMutation.isPending}
             onClick={() => scheduleMutation.mutate()}
           >
@@ -176,7 +196,7 @@ export function SmartSchedulerPage() {
       )}
 
       {!session && (
-        <div className="glass rounded-xl p-6 text-sm text-muted-foreground">
+        <div className="rounded-lg p-6 border border-border bg-card shadow-subtle text-sm text-muted-foreground">
           No pending content.{" "}
           <Link to="/dashboard/publishing" className="text-primary underline">
             Create a post

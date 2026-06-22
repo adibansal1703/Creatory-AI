@@ -45,24 +45,37 @@ export async function schedulePost(input: {
   scheduledTime: string;
   timezone: string;
 }): Promise<ScheduledPost> {
+  console.log("[schedulePost] Called with:", input);
+  console.log("[schedulePost] contentPayload:", JSON.stringify(input.contentPayload, null, 2));
   const userId = await requireUserId();
+  console.log("[schedulePost] User ID:", userId);
   const content = summarizeContent(input.platform, input.contentPayload);
+  console.log("[schedulePost] Summarized content:", content);
+
+  const insertData = {
+    user_id: userId,
+    platform: input.platform,
+    content,
+    content_payload: input.contentPayload,
+    scheduled_time: input.scheduledTime,
+    timezone: input.timezone,
+    status: "scheduled",
+  };
+  console.log("[schedulePost] Inserting into scheduled_posts:", insertData);
 
   const { data, error } = await supabase
     .from("scheduled_posts")
-    .insert({
-      user_id: userId,
-      platform: input.platform,
-      content,
-      content_payload: input.contentPayload,
-      scheduled_time: input.scheduledTime,
-      timezone: input.timezone,
-      status: "scheduled",
-    })
+    .insert(insertData)
     .select()
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error("[schedulePost] Database insert error:", error);
+    throw new Error(error.message);
+  }
+
+  console.log("[schedulePost] Insert successful:", data);
+  console.log("[schedulePost] Saved content_payload:", JSON.stringify(data.content_payload, null, 2));
 
   await enqueueNotification("post_scheduled", {
     platform: input.platform,
@@ -80,8 +93,10 @@ export async function scheduleMultiple(input: {
   scheduledTime: string;
   timezone: string;
 }): Promise<ScheduledPost[]> {
+  console.log("[scheduleMultiple] Called with:", input);
   const results: ScheduledPost[] = [];
   for (const platform of input.platforms) {
+    console.log(`[scheduleMultiple] Scheduling for platform: ${platform}`);
     results.push(
       await schedulePost({
         platform,
@@ -91,6 +106,7 @@ export async function scheduleMultiple(input: {
       }),
     );
   }
+  console.log("[scheduleMultiple] All platforms scheduled successfully:", results);
   return results;
 }
 

@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { generateAndSaveContentIdeas, generateCaptionForIdea } from "@/lib/api/ai-content-ideas";
-import type { ContentIdea, Goal, GeneratedCaption } from "@/lib/types/ai";
+import { generateContentIdeas, generateCaption } from "@/lib/api/ai-content-ideas.functions";
+import { uploadPostMedia } from "@/lib/api/post-media";
+import type { ContentIdea, GeneratedCaption, Emotion } from "@/lib/types/ai";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,51 +18,75 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Sparkles, Calendar, Wand2 } from "lucide-react";
+import { Loader2, Sparkles, Calendar, Wand2, Upload, Image as ImageIcon } from "lucide-react";
 import { PUBLISHING_SESSION_KEY, type PublishingSession } from "@/lib/publishing/content-summary";
 
-const GOALS: Goal[] = ["Grow Followers", "Increase Engagement", "Generate Leads", "Sell Product/Service"];
+const EMOTIONS: Emotion[] = ["Default", "Happy", "Funny", "Inspirational", "Motivational", "Emotional", "Romantic", "Sad", "Educational", "Professional", "Urgent", "Storytelling"];
 
 export function AIContentIdeasPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [niche, setNiche] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
-  const [goal, setGoal] = useState<Goal>("Grow Followers");
+  const [goal, setGoal] = useState("Grow Followers");
+  const [emotion, setEmotion] = useState<Emotion>("Default");
   const [generatedIdeas, setGeneratedIdeas] = useState<ContentIdea[]>([]);
   const [captions, setCaptions] = useState<Record<number, GeneratedCaption>>({});
+  const [mediaUrls, setMediaUrls] = useState<Record<number, string>>({});
+  const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
+
+  const accessToken = session?.access_token;
 
   const generateIdeasMutation = useMutation({
     mutationFn: async () => {
       if (!niche.trim() || !targetAudience.trim()) {
         throw new Error("Please fill in all fields");
       }
-      const response = await generateAndSaveContentIdeas({
-        niche: niche.trim(),
-        targetAudience: targetAudience.trim(),
-        goal,
+      if (!accessToken) {
+        console.error("No access token found");
+        throw new Error("You must be logged in");
+      }
+      const response = await generateContentIdeas({
+        data: {
+          accessToken,
+          niche: niche.trim(),
+          targetAudience: targetAudience.trim(),
+          goal,
+          emotion,
+        },
       });
       return response.ideas;
     },
     onSuccess: (ideas) => {
       setGeneratedIdeas(ideas);
       setCaptions({});
-      toast.success("Generated 20 content ideas!");
+      toast.success("Generated 5 content ideas!");
     },
     onError: (error: Error) => {
+      console.error("Generate ideas error:", error);
       toast.error(error.message);
     },
   });
 
   const generateCaptionMutation = useMutation({
     mutationFn: async ({ idea, index }: { idea: ContentIdea; index: number }) => {
-      const caption = await generateCaptionForIdea({
-        title: idea.title,
-        hook: idea.hook,
-        type: idea.type,
-        niche: niche.trim(),
-        targetAudience: targetAudience.trim(),
-        goal,
+      if (!accessToken) {
+        console.error("No access token found");
+        throw new Error("You must be logged in");
+      }
+      const caption = await generateCaption({
+        data: {
+          accessToken,
+          title: idea.title,
+          hook: idea.hook,
+          postType: idea.postType,
+          contentGoal: idea.contentGoal,
+          talkingPoints: idea.talkingPoints,
+          niche: niche.trim(),
+          targetAudience: targetAudience.trim(),
+          goal,
+          emotion: idea.emotion,
+        },
       });
       return { index, caption };
     },
@@ -70,44 +95,87 @@ export function AIContentIdeasPage() {
       toast.success("Caption generated!");
     },
     onError: (error: Error) => {
+      console.error("Generate caption error:", error);
       toast.error(error.message);
     },
   });
 
   const handleSchedule = (idea: ContentIdea, index: number) => {
     const caption = captions[index];
-    if (!caption) {
-      toast.error("Please generate a caption first");
-      return;
-    }
+    const mediaUrl = mediaUrls[index];
+    
+    // If caption exists, use it; otherwise use the idea content directly
+    const fullCaption = caption 
+      ? `${caption.caption}\n\n${caption.cta}\n\n${caption.hashtags.map((tag) => `#${tag}`).join(" ")}`
+      : `${idea.hook}\n\n${idea.talkingPoints.join("\n")}`;
 
-    const fullCaption = `${caption.caption}\n\n${caption.cta}\n\n${caption.hashtags.map((tag) => `#${tag}`).join(" ")}`;
+    const hashtags = caption 
+      ? caption.hashtags.map((tag) => `#${tag}`).join(" ")
+      : `#${idea.contentGoal} #${idea.postType} #${idea.emotion}`;
 
-    const session: PublishingSession = {
+    const publishingSession: PublishingSession = {
       platforms: ["instagram"],
       contentPayload: {
         instagram: {
-          content: fullCaption,
-          media_url: null,
+          caption: fullCaption,
+          hashtags: hashtags,
+          location: "",
+          tagged_accounts: "",
+          media_url: mediaUrl || null,
         },
       },
     };
 
-    sessionStorage.setItem(PUBLISHING_SESSION_KEY, JSON.stringify(session));
+    console.log("[AIContentIdeasPage] handleSchedule called:", {
+      idea: idea.title,
+      hasCaption: !!caption,
+      hasMedia: !!mediaUrl,
+      publishingSession,
+    });
+
+    sessionStorage.setItem(PUBLISHING_SESSION_KEY, JSON.stringify(publishingSession));
+    console.log("[AIContentIdeasPage] Session stored in sessionStorage, navigating to scheduler");
     navigate({ to: "/dashboard/scheduler" });
+  };
+
+  const handleMediaUpload = (index: number) => {
+    const input = fileInputRefs.current[index];
+    if (input) {
+      input.click();
+    }
+  };
+
+  const handleFileChange = async (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const publicUrl = await uploadPostMedia(file);
+      setMediaUrls(prev => ({ ...prev, [index]: publicUrl }));
+      console.log("[AIContentIdeasPage] Media uploaded successfully:", publicUrl);
+      toast.success("Media uploaded successfully");
+    } catch (error) {
+      console.error("[AIContentIdeasPage] Media upload failed:", error);
+      toast.error(error instanceof Error ? error.message : "Media upload failed");
+    }
+  };
+
+  const handleGenerateAIImage = async (index: number) => {
+    toast.info("AI image generation coming soon");
+    // TODO: Implement AI image generation
   };
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-semibold tracking-tight flex items-center gap-2">
-          <Sparkles className="size-8 text-purple-400" />
+          <Sparkles className="size-8 text-primary" />
           AI Content Ideas
         </h1>
         <p className="mt-1 text-muted-foreground">Generate Instagram content ideas with AI</p>
       </div>
 
-      <Card className="glass border-border/60">
+      <Card className="shadow-subtle">
         <CardHeader>
           <CardTitle>Generate Ideas</CardTitle>
         </CardHeader>
@@ -119,7 +187,6 @@ export function AIContentIdeasPage() {
               placeholder="e.g., Fitness, Fashion, Tech"
               value={niche}
               onChange={(e) => setNiche(e.target.value)}
-              className="glass border-border/60"
             />
           </div>
 
@@ -130,20 +197,34 @@ export function AIContentIdeasPage() {
               placeholder="e.g., Young professionals, Fitness enthusiasts"
               value={targetAudience}
               onChange={(e) => setTargetAudience(e.target.value)}
-              className="glass border-border/60"
             />
           </div>
 
           <div className="space-y-2">
             <Label>Goal</Label>
-            <Select value={goal} onValueChange={(value) => setGoal(value as Goal)}>
-              <SelectTrigger className="glass border-border/60">
+            <Select value={goal} onValueChange={setGoal}>
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {GOALS.map((g) => (
-                  <SelectItem key={g} value={g}>
-                    {g}
+                <SelectItem value="Grow Followers">Grow Followers</SelectItem>
+                <SelectItem value="Increase Engagement">Increase Engagement</SelectItem>
+                <SelectItem value="Generate Leads">Generate Leads</SelectItem>
+                <SelectItem value="Sell Product/Service">Sell Product/Service</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Content Emotion</Label>
+            <Select value={emotion} onValueChange={(value) => setEmotion(value as Emotion)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {EMOTIONS.map((e) => (
+                  <SelectItem key={e} value={e}>
+                    {e}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -151,7 +232,7 @@ export function AIContentIdeasPage() {
           </div>
 
           <Button
-            className="w-full bg-gradient-brand border-0"
+            className="w-full"
             onClick={() => generateIdeasMutation.mutate()}
             disabled={generateIdeasMutation.isPending}
           >
@@ -175,12 +256,20 @@ export function AIContentIdeasPage() {
           <h2 className="text-2xl font-semibold">Generated Ideas</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {generatedIdeas.map((idea, index) => (
-              <Card key={index} className="glass border-border/60 flex flex-col">
+              <Card key={index} className="shadow-subtle flex flex-col">
                 <CardHeader>
                   <CardTitle className="text-lg">Idea #{index + 1}</CardTitle>
-                  <Badge variant="secondary" className="w-fit">
-                    {idea.type}
-                  </Badge>
+                  <div className="flex gap-2 flex-wrap">
+                    <Badge variant="secondary" className="w-fit">
+                      {idea.postType}
+                    </Badge>
+                    <Badge variant="outline" className="w-fit">
+                      {idea.contentGoal}
+                    </Badge>
+                    <Badge variant="outline" className="w-fit">
+                      {idea.emotion}
+                    </Badge>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4 flex-1">
                   <div>
@@ -188,8 +277,33 @@ export function AIContentIdeasPage() {
                     <p className="text-sm mt-1">{idea.title}</p>
                   </div>
                   <div>
+                    <Label className="text-sm font-medium">Visual Concept</Label>
+                    <div className="text-sm mt-1 text-muted-foreground">
+                      {typeof idea.visualConcept === 'string' ? (
+                        <p>{idea.visualConcept}</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {Object.entries(idea.visualConcept).map(([key, value]) => (
+                            <div key={key} className="bg-muted/30 p-2 rounded">
+                              <p className="font-medium capitalize">{key}</p>
+                              <p className="text-xs">{String(value)}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
                     <Label className="text-sm font-medium">Hook</Label>
                     <p className="text-sm mt-1 text-muted-foreground">{idea.hook}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Talking Points</Label>
+                    <ul className="text-sm mt-1 text-muted-foreground list-disc list-inside space-y-1">
+                      {idea.talkingPoints.map((point, i) => (
+                        <li key={i}>{point}</li>
+                      ))}
+                    </ul>
                   </div>
 
                   {captions[index] && (
@@ -205,11 +319,53 @@ export function AIContentIdeasPage() {
                     </div>
                   )}
 
+                  {mediaUrls[index] && (
+                    <div className="space-y-2 pt-2 border-t border-border/60">
+                      <Label className="text-sm font-medium">Uploaded Media</Label>
+                      <div className="relative rounded-lg overflow-hidden">
+                        <img 
+                          src={mediaUrls[index]} 
+                          alt="Uploaded media" 
+                          className="w-full h-48 object-cover"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-2 pt-2 border-t border-border/60">
+                    <Label className="text-sm font-medium">Media</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleMediaUpload(index)}
+                      >
+                        <Upload className="size-4 mr-2" />
+                        Upload Media
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleGenerateAIImage(index)}
+                      >
+                        <ImageIcon className="size-4 mr-2" />
+                        Generate AI Image
+                      </Button>
+                    </div>
+                    <input
+                      type="file"
+                      ref={(el) => { fileInputRefs.current[index] = el; }}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange(index, e)}
+                    />
+                  </div>
+
                   <div className="flex gap-2 pt-2">
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 glass"
+                      className="flex-1"
                       onClick={() =>
                         generateCaptionMutation.mutate({ idea, index })
                       }
@@ -224,9 +380,8 @@ export function AIContentIdeasPage() {
                     </Button>
                     <Button
                       size="sm"
-                      className="flex-1 bg-gradient-brand border-0"
+                      className="flex-1"
                       onClick={() => handleSchedule(idea, index)}
-                      disabled={!captions[index]}
                     >
                       <Calendar className="size-4 mr-2" />
                       Schedule

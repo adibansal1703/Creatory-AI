@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import logo from "@/assets/creatory-logo.png";
 
 type AuthLayoutProps = {
   title: string;
@@ -15,10 +14,6 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
     <div className="min-h-screen bg-background text-foreground">
 
       <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-16">
-        <Link to="/" className="mb-10 flex items-center justify-center">
-          <img src={logo} alt="Creatory AI" className="h-20 w-auto sm:h-24" />
-        </Link>
-
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}

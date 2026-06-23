@@ -3,7 +3,6 @@ import { buttonVariants } from "@/components/ui/button";
 import { UserAccountMenu } from "@/components/layout/UserAccountMenu";
 import { useUserProfile } from "@/hooks/use-user-profile";
 import { cn } from "@/lib/utils";
-import logo from "@/assets/creatory-logo.png";
 
 export function Navbar() {
   const { isAuthenticated, loading } = useUserProfile();
@@ -13,7 +12,7 @@ export function Navbar() {
       <div className="mx-auto mt-4 max-w-6xl px-4 pointer-events-auto">
         <nav className="rounded-lg flex items-center justify-between px-5 py-3 relative gap-3 border border-border bg-card shadow-subtle">
           <Link to="/" className="flex items-center gap-2 shrink-0 relative z-10">
-            <img src={logo} alt="Creatory AI" className="h-9 w-auto" />
+            <span className="font-semibold">Creatory AI</span>
           </Link>
           <div className="hidden md:flex items-center gap-7 text-sm text-muted-foreground relative z-20">
             <a href="#features" className="hover:text-foreground transition">

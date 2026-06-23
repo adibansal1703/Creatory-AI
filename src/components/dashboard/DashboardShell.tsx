@@ -8,7 +8,6 @@ import {
   Settings,
   Sparkles,
 } from "lucide-react";
-import logo from "@/assets/creatory-logo.png";
 import { UserAccountMenu } from "@/components/layout/UserAccountMenu";
 import { cn } from "@/lib/utils";
 
@@ -27,20 +26,17 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="flex min-h-screen">
-        <aside className="hidden lg:flex w-64 flex-col border-r border-border bg-card shrink-0">
-          <div className="p-6 border-b border-border space-y-4">
-            <Link to="/dashboard">
-              <img src={logo} alt="Creatory AI" className="h-8 w-auto" />
-            </Link>
+        <aside className="hidden lg:flex w-80 flex-col border-r border-border/60 bg-card shrink-0">
+          <div className="p-10 border-b border-border/60 space-y-6">
             <Link
               to="/"
-              className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors font-sans"
             >
-              <Home className="size-3.5" />
+              <Home className="size-4" />
               Back to home page
             </Link>
           </div>
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 p-8 space-y-2 border-b border-amber-900/30">
             {navItems.map((item) => {
               const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
               return (
@@ -48,9 +44,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   key={item.to}
                   to={item.to}
                   className={cn(
-                    "flex items-center gap-3 rounded-sm px-4 py-2.5 text-sm transition-all duration-200",
+                    "flex items-center gap-3 rounded-xl px-6 py-3.5 text-sm font-medium transition-all duration-300 ease-out",
                     active
-                      ? "bg-primary text-primary-foreground font-medium shadow-subtle"
+                      ? "bg-primary text-primary-foreground shadow-subtle"
                       : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                   )}
                 >
@@ -60,21 +56,18 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
-          <div className="p-4 border-t border-border">
+          <div className="p-8 border-t border-amber-900/30">
             <UserAccountMenu className="w-full justify-start" />
           </div>
         </aside>
 
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="lg:hidden border-b border-border bg-card sticky top-0 z-40 px-4 py-4">
-            <div className="flex items-center justify-between gap-2 mb-4">
-              <Link to="/dashboard">
-                <img src={logo} alt="Creatory AI" className="h-7 w-auto" />
-              </Link>
+          <header className="lg:hidden border-b border-amber-900/30 bg-card sticky top-0 z-40 px-6 py-6">
+            <div className="flex items-center justify-between gap-2 mb-6">
               <div className="flex items-center gap-1">
                 <Link
                   to="/"
-                  className="text-xs text-muted-foreground hover:text-foreground px-2 py-1"
+                  className="text-xs text-muted-foreground hover:text-foreground px-3 py-2 font-sans"
                 >
                   Home
                 </Link>
@@ -89,8 +82,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     key={item.to}
                     to={item.to}
                     className={cn(
-                      "shrink-0 rounded-sm px-4 py-2 text-xs transition-all duration-200",
-                      active ? "bg-primary text-primary-foreground font-medium" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                      "shrink-0 rounded-xl px-5 py-2.5 text-xs font-medium transition-all duration-300 ease-out",
+                      active ? "bg-primary text-primary-foreground shadow-subtle" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                     )}
                   >
                     {item.label}
@@ -100,7 +93,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </nav>
           </header>
 
-          <main className="flex-1 p-6 md:p-10 max-w-7xl w-full mx-auto">{children}</main>
+          <main className="flex-1 p-10 md:p-16 max-w-7xl w-full mx-auto border-t border-amber-900/30">{children}</main>
         </div>
       </div>
     </div>

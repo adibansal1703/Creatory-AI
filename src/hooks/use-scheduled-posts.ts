@@ -40,13 +40,8 @@ export function useScheduleMultiple() {
 export function useUpdateScheduledPost() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      input,
-    }: {
-      id: string;
-      input: Parameters<typeof updateScheduledPost>[1];
-    }) => updateScheduledPost(id, input),
+    mutationFn: ({ id, input }: { id: string; input: Parameters<typeof updateScheduledPost>[1] }) =>
+      updateScheduledPost(id, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: scheduledPostsQueryKey });
       queryClient.invalidateQueries({ queryKey: ["recent-scheduled"] });

@@ -1,7 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { generateAndSaveContentIdeas, generateCaptionForIdea } from "@/lib/api/ai-content-ideas.server";
+import {
+  generateAndSaveContentIdeas,
+  generateCaptionForIdea,
+} from "@/lib/api/ai-content-ideas.server";
 import { requireServerUser } from "@/lib/supabase/server-auth.server";
 import type { Emotion } from "@/lib/types/ai";
 
@@ -10,7 +13,20 @@ const generateIdeasSchema = z.object({
   niche: z.string().min(1),
   targetAudience: z.string().min(1),
   goal: z.string().min(1),
-  emotion: z.enum(["Default", "Happy", "Funny", "Inspirational", "Motivational", "Emotional", "Romantic", "Sad", "Educational", "Professional", "Urgent", "Storytelling"]),
+  emotion: z.enum([
+    "Default",
+    "Happy",
+    "Funny",
+    "Inspirational",
+    "Motivational",
+    "Emotional",
+    "Romantic",
+    "Sad",
+    "Educational",
+    "Professional",
+    "Urgent",
+    "Storytelling",
+  ]),
 });
 
 const generateCaptionSchema = z.object({
@@ -23,7 +39,20 @@ const generateCaptionSchema = z.object({
   niche: z.string().min(1),
   targetAudience: z.string().min(1),
   goal: z.string().min(1),
-  emotion: z.enum(["Default", "Happy", "Funny", "Inspirational", "Motivational", "Emotional", "Romantic", "Sad", "Educational", "Professional", "Urgent", "Storytelling"]),
+  emotion: z.enum([
+    "Default",
+    "Happy",
+    "Funny",
+    "Inspirational",
+    "Motivational",
+    "Emotional",
+    "Romantic",
+    "Sad",
+    "Educational",
+    "Professional",
+    "Urgent",
+    "Storytelling",
+  ]),
 });
 
 export const generateContentIdeas = createServerFn({ method: "POST" })

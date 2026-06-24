@@ -91,27 +91,27 @@
   --card-foreground: oklch(0.18 0.02 45);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.02 45);
-  
+
   /* Primary - Soft champagne/beige accent */
   --primary: oklch(0.65 0.05 75);
   --primary-foreground: oklch(0.18 0.02 45);
-  
+
   /* Secondary - Warm beige */
   --secondary: oklch(0.94 0.015 85);
   --secondary-foreground: oklch(0.18 0.02 45);
-  
+
   /* Muted - Soft ivory */
   --muted: oklch(0.95 0.012 88);
   --muted-foreground: oklch(0.45 0.02 45);
-  
+
   /* Accent - Muted gold */
   --accent: oklch(0.7 0.08 75);
   --accent-foreground: oklch(0.18 0.02 45);
-  
+
   /* Destructive - Muted red */
   --destructive: oklch(0.55 0.15 25);
   --destructive-foreground: oklch(0.98 0.01 85);
-  
+
   /* Borders - Subtle warm gray */
   --border: oklch(0.88 0.015 85 / 0.5);
   --input: oklch(0.92 0.012 88);
@@ -148,27 +148,27 @@
   --card-foreground: oklch(0.96 0.008 88);
   --popover: oklch(0.2 0.025 45);
   --popover-foreground: oklch(0.96 0.008 88);
-  
+
   /* Primary - Warmer champagne in dark mode */
   --primary: oklch(0.7 0.06 75);
   --primary-foreground: oklch(0.15 0.02 45);
-  
+
   /* Secondary - Warm dark */
   --secondary: oklch(0.28 0.035 45);
   --secondary-foreground: oklch(0.96 0.008 88);
-  
+
   /* Muted - Dark warm */
   --muted: oklch(0.28 0.035 45);
   --muted-foreground: oklch(0.7 0.04 45);
-  
+
   /* Accent - Warmer gold */
   --accent: oklch(0.75 0.08 75);
   --accent-foreground: oklch(0.15 0.02 45);
-  
+
   /* Destructive */
   --destructive: oklch(0.6 0.18 25);
   --destructive-foreground: oklch(0.96 0.008 88);
-  
+
   /* Borders */
   --border: oklch(0.32 0.035 45 / 0.5);
   --input: oklch(0.28 0.035 45);
@@ -214,7 +214,12 @@
   }
 
   /* Editorial Typography */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-serif);
     letter-spacing: -0.02em;
     line-height: 1.15;
@@ -234,7 +239,12 @@
     font-size: clamp(1.5rem, 3vw, 2.25rem);
   }
 
-  p, span, div, button, input, textarea {
+  p,
+  span,
+  div,
+  button,
+  input,
+  textarea {
     font-family: var(--font-sans);
   }
 }

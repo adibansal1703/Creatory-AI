@@ -211,7 +211,7 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
 
               <div className="flex flex-wrap items-center gap-2 justify-end">
                 <p className="text-sm text-muted-foreground">
-                  Showing <span className="font-medium">{filteredPosts.length}</span> of{' '}
+                  Showing <span className="font-medium">{filteredPosts.length}</span> of{" "}
                   <span className="font-medium">{posts.length}</span>
                 </p>
                 <Button
@@ -249,14 +249,14 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
                       {post.content}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Scheduled for{' '}
+                      Scheduled for{" "}
                       <span className="text-foreground font-medium">
                         {formatScheduledDateTime(post.scheduled_time)}
                       </span>
                       {post.timezone ? ` (${post.timezone})` : null}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Created{' '}
+                      Created{" "}
                       <span className="text-foreground font-medium">
                         {formatScheduledDateTime(post.created_at)}
                       </span>
@@ -265,11 +265,7 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
                       <p className="text-xs text-destructive line-clamp-2">{post.error_message}</p>
                     )}
                     <div className="flex flex-wrap gap-2 pt-1 mt-auto">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setEditingPost(post)}
-                      >
+                      <Button variant="outline" size="sm" onClick={() => setEditingPost(post)}>
                         <Pencil className="size-3.5" />
                         Edit / Reschedule
                       </Button>
@@ -297,7 +293,10 @@ export function ScheduledPostsSection({ variant = "page" }: ScheduledPostsSectio
         onOpenChange={(open) => !open && setEditingPost(null)}
       />
 
-      <AlertDialog open={Boolean(deletingPost)} onOpenChange={(open) => !open && setDeletingPost(null)}>
+      <AlertDialog
+        open={Boolean(deletingPost)}
+        onOpenChange={(open) => !open && setDeletingPost(null)}
+      >
         <AlertDialogContent className="bg-card border-border shadow-medium">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete scheduled post?</AlertDialogTitle>

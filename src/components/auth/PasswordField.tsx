@@ -39,7 +39,11 @@ export function PasswordField({
           type={visible ? "text" : "password"}
           autoComplete={autoComplete}
           placeholder={placeholder}
-          className={cn("glass border-border/60 h-10 pr-10", error && "border-destructive", className)}
+          className={cn(
+            "glass border-border/60 h-10 pr-10",
+            error && "border-destructive",
+            className,
+          )}
           {...inputProps}
         />
         <button

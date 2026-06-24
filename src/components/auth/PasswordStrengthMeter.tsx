@@ -1,4 +1,8 @@
-import { getPasswordStrength, STRENGTH_COLORS, type PasswordStrength } from "@/lib/password-strength";
+import {
+  getPasswordStrength,
+  STRENGTH_COLORS,
+  type PasswordStrength,
+} from "@/lib/password-strength";
 import { cn } from "@/lib/utils";
 
 const LABELS: Record<PasswordStrength, string> = {

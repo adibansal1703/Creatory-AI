@@ -16,7 +16,7 @@ await tick();
 const intervalId = setInterval(tick, INTERVAL_MS);
 
 // Keep the process alive by preventing the interval from being garbage collected
-process.on('SIGINT', () => {
+process.on("SIGINT", () => {
   clearInterval(intervalId);
   process.exit(0);
 });

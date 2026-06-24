@@ -21,5 +21,7 @@ export async function publishToPlatform(input: PlatformPublishInput): Promise<st
     });
   }
 
-  throw new Error(`${input.platform} publishing is not implemented yet. Instagram is supported today.`);
+  throw new Error(
+    `${input.platform} publishing is not implemented yet. Instagram is supported today.`,
+  );
 }

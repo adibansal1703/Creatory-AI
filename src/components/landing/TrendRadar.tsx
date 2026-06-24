@@ -22,11 +22,16 @@ export function TrendRadar() {
           </h2>
           <p className="mt-4 text-muted-foreground max-w-md">
             Our radar scans millions of posts in real time. Get niche-specific topic
-            recommendations, hashtag forecasts and competitor alerts — turned into
-            ready-to-publish drafts by your AI agents.
+            recommendations, hashtag forecasts and competitor alerts — turned into ready-to-publish
+            drafts by your AI agents.
           </p>
           <ul className="mt-6 space-y-3 text-sm">
-            {["Real-time viral content discovery", "Niche & competitor monitoring", "Engagement forecasting with virality score", "Auto-generated drafts from trends"].map((x) => (
+            {[
+              "Real-time viral content discovery",
+              "Niche & competitor monitoring",
+              "Engagement forecasting with virality score",
+              "Auto-generated drafts from trends",
+            ].map((x) => (
               <li key={x} className="flex items-center gap-2 text-muted-foreground">
                 <span className="size-1.5 rounded-full bg-gradient-brand" /> {x}
               </li>

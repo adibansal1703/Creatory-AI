@@ -152,7 +152,11 @@ function LoginPage() {
           id="password"
           label="Password"
           labelExtra={
-            <button type="button" className="text-xs text-primary hover:underline" onClick={onForgotPassword}>
+            <button
+              type="button"
+              className="text-xs text-primary hover:underline"
+              onClick={onForgotPassword}
+            >
               Forgot password?
             </button>
           }

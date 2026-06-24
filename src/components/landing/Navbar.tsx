@@ -32,10 +32,7 @@ export function Navbar() {
               <>
                 <Link
                   to="/dashboard"
-                  className={cn(
-                    buttonVariants({ size: "sm" }),
-                    "text-primary-foreground",
-                  )}
+                  className={cn(buttonVariants({ size: "sm" }), "text-primary-foreground")}
                 >
                   Dashboard
                 </Link>
@@ -56,10 +53,7 @@ export function Navbar() {
                 <Link
                   to="/signup"
                   search={{ pending: false }}
-                  className={cn(
-                    buttonVariants({ size: "sm" }),
-                    "text-primary-foreground",
-                  )}
+                  className={cn(buttonVariants({ size: "sm" }), "text-primary-foreground")}
                 >
                   Create account
                 </Link>

@@ -16,7 +16,7 @@ export function useUserProfile() {
   const isAuthenticated = Boolean(user && isEmailVerified(user));
 
   useEffect(() => {
-    if (!user || !isEmailVerified(user)) {
+    if (!user?.id || !isEmailVerified(user)) {
       setProfile(null);
       return;
     }
@@ -41,7 +41,7 @@ export function useUserProfile() {
     return () => {
       cancelled = true;
     };
-  }, [user?.id, user?.email]);
+  }, [user?.id, user?.email, user]);
 
   const displayName =
     profile?.full_name ||

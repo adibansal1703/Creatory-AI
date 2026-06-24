@@ -21,10 +21,10 @@ export async function fetchAIContentIdeas(userId: string): Promise<AIContentIdea
 }
 
 export async function generateAndSaveContentIdeas(
-  request: AIContentIdeasRequest & { userId: string }
+  request: AIContentIdeasRequest & { userId: string },
 ): Promise<AIContentIdeasResponse> {
   const { userId, ...aiRequest } = request;
-  
+
   // Generate ideas using Gemini
   const response = await generateContentIdeas(aiRequest);
 
@@ -45,7 +45,7 @@ export async function generateAndSaveContentIdeas(
 }
 
 export async function generateCaptionForIdea(
-  request: AICaptionRequest
+  request: AICaptionRequest,
 ): Promise<AICaptionResponse> {
   return generateCaption(request);
 }

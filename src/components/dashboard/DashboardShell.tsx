@@ -83,7 +83,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     to={item.to}
                     className={cn(
                       "shrink-0 rounded-xl px-5 py-2.5 text-xs font-medium transition-all duration-300 ease-out",
-                      active ? "bg-primary text-primary-foreground shadow-subtle" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                      active
+                        ? "bg-primary text-primary-foreground shadow-subtle"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                     )}
                   >
                     {item.label}
@@ -93,7 +95,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </nav>
           </header>
 
-          <main className="flex-1 p-10 md:p-16 max-w-7xl w-full mx-auto border-t border-amber-900/30">{children}</main>
+          <main className="flex-1 p-10 md:p-16 max-w-7xl w-full mx-auto border-t border-amber-900/30">
+            {children}
+          </main>
         </div>
       </div>
     </div>

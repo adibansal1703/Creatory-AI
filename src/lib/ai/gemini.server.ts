@@ -6,7 +6,8 @@ import type {
   AICaptionResponse,
 } from "@/lib/types/ai";
 
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+const GEMINI_API_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 // Rate limiting: simple in-memory tracker
 const requestTimestamps: number[] = [];
@@ -31,7 +32,7 @@ function checkRateLimit(): boolean {
 async function fetchWithRetry(
   url: string,
   options: RequestInit,
-  maxRetries = 3
+  maxRetries = 3,
 ): Promise<Response> {
   const retryableStatuses = [429, 500, 502, 503, 504];
   const delays = [2000, 4000, 8000]; // 2s, 4s, 8s exponential backoff
@@ -45,20 +46,14 @@ async function fetchWithRetry(
       }
 
       if (attempt === maxRetries) {
-        console.error(`Gemini API error after ${maxRetries} retries: ${response.status}`);
         throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
       }
-
-      console.log(`Gemini API returned ${response.status}, retrying in ${delays[attempt] / 1000}s...`);
-      await new Promise(resolve => setTimeout(resolve, delays[attempt]));
+      await new Promise((resolve) => setTimeout(resolve, delays[attempt]));
     } catch (error) {
       if (attempt === maxRetries) {
-        console.error("Gemini API request failed:", error);
         throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
       }
-
-      console.log(`Gemini API request failed, retrying in ${delays[attempt] / 1000}s...`);
-      await new Promise(resolve => setTimeout(resolve, delays[attempt]));
+      await new Promise((resolve) => setTimeout(resolve, delays[attempt]));
     }
   }
 
@@ -66,7 +61,7 @@ async function fetchWithRetry(
 }
 
 export async function generateContentIdeas(
-  request: AIContentIdeasRequest
+  request: AIContentIdeasRequest,
 ): Promise<AIContentIdeasResponse> {
   if (!checkRateLimit()) {
     throw new Error("Rate limit exceeded. Please wait a moment before trying again.");
@@ -149,7 +144,6 @@ Ensure you generate exactly 5 unique, high-quality, actionable ideas with the sp
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`Gemini API error: ${response.status} - ${errorText}`);
       throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
     }
 
@@ -157,35 +151,31 @@ Ensure you generate exactly 5 unique, high-quality, actionable ideas with the sp
     const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!generatedText) {
-      console.error("No content generated from Gemini API");
       throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
     }
 
     // Extract JSON from the response (in case there's extra text)
     const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      console.error("Could not parse JSON from Gemini response");
       throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
     }
 
     const parsedResponse: AIContentIdeasResponse = JSON.parse(jsonMatch[0]);
 
     if (!parsedResponse.ideas || parsedResponse.ideas.length !== 5) {
-      console.error("Expected exactly 5 ideas from Gemini API");
       throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
     }
 
     return parsedResponse;
   } catch (error) {
     if (error instanceof Error) {
-      // If it's already our user-friendly error, rethrow it
-      if (error.message === "AI generation is temporarily busy. Please try again in a few moments.") {
+      if (
+        error.message === "AI generation is temporarily busy. Please try again in a few moments."
+      ) {
         throw error;
       }
-      console.error("Failed to generate content ideas:", error);
       throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
     }
-    console.error("Failed to generate content ideas:", error);
     throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
   }
 }
@@ -263,7 +253,6 @@ Return ONLY valid JSON, no additional text.`;
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`Gemini API error: ${response.status} - ${errorText}`);
       throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
     }
 
@@ -271,35 +260,31 @@ Return ONLY valid JSON, no additional text.`;
     const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!generatedText) {
-      console.error("No content generated from Gemini API");
       throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
     }
 
     // Extract JSON from the response
     const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      console.error("Could not parse JSON from Gemini response");
       throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
     }
 
     const parsedResponse: AICaptionResponse = JSON.parse(jsonMatch[0]);
 
     if (!parsedResponse.caption || !parsedResponse.cta || !parsedResponse.hashtags) {
-      console.error("Invalid response format from Gemini API");
       throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
     }
 
     return parsedResponse;
   } catch (error) {
     if (error instanceof Error) {
-      // If it's already our user-friendly error, rethrow it
-      if (error.message === "AI generation is temporarily busy. Please try again in a few moments.") {
+      if (
+        error.message === "AI generation is temporarily busy. Please try again in a few moments."
+      ) {
         throw error;
       }
-      console.error("Failed to generate caption:", error);
       throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
     }
-    console.error("Failed to generate caption:", error);
     throw new Error("AI generation is temporarily busy. Please try again in a few moments.");
   }
 }

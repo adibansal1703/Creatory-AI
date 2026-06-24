@@ -38,7 +38,10 @@ export async function publishNow(input: {
   });
 }
 
-export async function publishMultiple(platforms: PostPlatform[], payload: ContentPayload): Promise<void> {
+export async function publishMultiple(
+  platforms: PostPlatform[],
+  payload: ContentPayload,
+): Promise<void> {
   const accessToken = await requireAccessToken();
   await publishPostsNow({
     data: {

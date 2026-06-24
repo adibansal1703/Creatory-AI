@@ -2,16 +2,16 @@
 
 ## Application routes
 
-| Route | Purpose |
-|-------|---------|
-| `/` | Marketing landing |
-| `/signup` | Registration + verification |
-| `/login` | Authentication |
-| `/dashboard` | Home + stats |
-| `/dashboard/publishing` | Multi-platform composer |
-| `/dashboard/scheduler` | Schedule + manage posts |
-| `/dashboard/accounts` | Social connections |
-| `/dashboard/settings` | Profile + timezone |
+| Route                   | Purpose                     |
+| ----------------------- | --------------------------- |
+| `/`                     | Marketing landing           |
+| `/signup`               | Registration + verification |
+| `/login`                | Authentication              |
+| `/dashboard`            | Home + stats                |
+| `/dashboard/publishing` | Multi-platform composer     |
+| `/dashboard/scheduler`  | Schedule + manage posts     |
+| `/dashboard/accounts`   | Social connections          |
+| `/dashboard/settings`   | Profile + timezone          |
 
 ## Database tables
 

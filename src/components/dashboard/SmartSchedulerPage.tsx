@@ -24,10 +24,7 @@ import {
   getDefaultScheduleValues,
   minScheduleDateString,
 } from "@/lib/scheduled-post-utils";
-import {
-  PUBLISHING_SESSION_KEY,
-  type PublishingSession,
-} from "@/lib/publishing/content-summary";
+import { PUBLISHING_SESSION_KEY, type PublishingSession } from "@/lib/publishing/content-summary";
 
 export function SmartSchedulerPage() {
   const navigate = useNavigate();
@@ -42,11 +39,9 @@ export function SmartSchedulerPage() {
 
   useEffect(() => {
     const raw = sessionStorage.getItem(PUBLISHING_SESSION_KEY);
-    console.log("[SmartSchedulerPage] Reading session from sessionStorage:", raw ? "Found" : "Not found");
     if (raw) {
       try {
         const parsed = JSON.parse(raw) as PublishingSession;
-        console.log("[SmartSchedulerPage] Session parsed successfully:", parsed);
         setSession(parsed);
       } catch (error) {
         console.error("[SmartSchedulerPage] Failed to parse session:", error);
@@ -71,34 +66,21 @@ export function SmartSchedulerPage() {
 
   const scheduleMutation = useMutation({
     mutationFn: async () => {
-      console.log("[SmartSchedulerPage] scheduleMutation called");
-      console.log("[SmartSchedulerPage] Session:", JSON.stringify(session, null, 2));
       if (!session?.platforms.length) {
-        console.error("[SmartSchedulerPage] No platforms in session");
         throw new Error("No content to schedule");
       }
       const scheduledTime = combineDateAndTime(scheduleDate, scheduleTime);
-      console.log("[SmartSchedulerPage] Scheduled time:", scheduledTime.toISOString());
       if (scheduledTime.getTime() <= Date.now()) {
-        console.error("[SmartSchedulerPage] Scheduled time is in the past");
         throw new Error("Scheduled time must be in the future");
       }
-      console.log("[SmartSchedulerPage] Calling scheduleMultiple with:", {
-        platforms: session.platforms,
-        contentPayload: session.contentPayload,
-        scheduledTime: scheduledTime.toISOString(),
-        timezone,
-      });
       await scheduleMultiple({
         platforms: session.platforms,
         contentPayload: session.contentPayload,
         scheduledTime: scheduledTime.toISOString(),
         timezone,
       });
-      console.log("[SmartSchedulerPage] scheduleMultiple completed successfully");
     },
     onSuccess: () => {
-      console.log("[SmartSchedulerPage] Schedule successful, cleaning up session");
       sessionStorage.removeItem(PUBLISHING_SESSION_KEY);
       queryClient.invalidateQueries({ queryKey: scheduledPostsQueryKey });
       queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
@@ -107,7 +89,6 @@ export function SmartSchedulerPage() {
       toast.success("Your post has been scheduled successfully.");
     },
     onError: (e: Error) => {
-      console.error("[SmartSchedulerPage] Schedule failed:", e);
       toast.error(e.message);
     },
   });

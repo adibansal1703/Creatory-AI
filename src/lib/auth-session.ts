@@ -28,7 +28,9 @@ function isPkceVerifierError(message: string): boolean {
 }
 
 export type AuthCallbackResult = {
-  session: Awaited<ReturnType<ReturnType<typeof getSupabase>["auth"]["getSession"]>>["data"]["session"];
+  session: Awaited<
+    ReturnType<ReturnType<typeof getSupabase>["auth"]["getSession"]>
+  >["data"]["session"];
   verified: boolean;
   /** Email likely confirmed but session could not be restored (e.g. link opened in another browser). */
   emailConfirmedNoSession?: boolean;
@@ -39,8 +41,7 @@ export async function completeAuthFromUrl(): Promise<AuthCallbackResult> {
   const supabase = getSupabase();
   const searchParams = new URLSearchParams(window.location.search);
   const code = searchParams.get("code");
-  const authError =
-    searchParams.get("error_description") ?? searchParams.get("error");
+  const authError = searchParams.get("error_description") ?? searchParams.get("error");
 
   if (authError) {
     throw new Error(authError);

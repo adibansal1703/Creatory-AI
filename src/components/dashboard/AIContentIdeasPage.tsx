@@ -21,7 +21,20 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Sparkles, Calendar, Wand2, Upload, Image as ImageIcon } from "lucide-react";
 import { PUBLISHING_SESSION_KEY, type PublishingSession } from "@/lib/publishing/content-summary";
 
-const EMOTIONS: Emotion[] = ["Default", "Happy", "Funny", "Inspirational", "Motivational", "Emotional", "Romantic", "Sad", "Educational", "Professional", "Urgent", "Storytelling"];
+const EMOTIONS: Emotion[] = [
+  "Default",
+  "Happy",
+  "Funny",
+  "Inspirational",
+  "Motivational",
+  "Emotional",
+  "Romantic",
+  "Sad",
+  "Educational",
+  "Professional",
+  "Urgent",
+  "Storytelling",
+];
 
 export function AIContentIdeasPage() {
   const navigate = useNavigate();
@@ -43,7 +56,6 @@ export function AIContentIdeasPage() {
         throw new Error("Please fill in all fields");
       }
       if (!accessToken) {
-        console.error("No access token found");
         throw new Error("You must be logged in");
       }
       const response = await generateContentIdeas({
@@ -63,7 +75,6 @@ export function AIContentIdeasPage() {
       toast.success("Generated 5 content ideas!");
     },
     onError: (error: Error) => {
-      console.error("Generate ideas error:", error);
       toast.error(error.message);
     },
   });
@@ -71,7 +82,6 @@ export function AIContentIdeasPage() {
   const generateCaptionMutation = useMutation({
     mutationFn: async ({ idea, index }: { idea: ContentIdea; index: number }) => {
       if (!accessToken) {
-        console.error("No access token found");
         throw new Error("You must be logged in");
       }
       const caption = await generateCaption({
@@ -95,7 +105,6 @@ export function AIContentIdeasPage() {
       toast.success("Caption generated!");
     },
     onError: (error: Error) => {
-      console.error("Generate caption error:", error);
       toast.error(error.message);
     },
   });
@@ -103,13 +112,13 @@ export function AIContentIdeasPage() {
   const handleSchedule = (idea: ContentIdea, index: number) => {
     const caption = captions[index];
     const mediaUrl = mediaUrls[index];
-    
+
     // If caption exists, use it; otherwise use the idea content directly
-    const fullCaption = caption 
+    const fullCaption = caption
       ? `${caption.caption}\n\n${caption.cta}\n\n${caption.hashtags.map((tag) => `#${tag}`).join(" ")}`
       : `${idea.hook}\n\n${idea.talkingPoints.join("\n")}`;
 
-    const hashtags = caption 
+    const hashtags = caption
       ? caption.hashtags.map((tag) => `#${tag}`).join(" ")
       : `#${idea.contentGoal} #${idea.postType} #${idea.emotion}`;
 
@@ -126,15 +135,7 @@ export function AIContentIdeasPage() {
       },
     };
 
-    console.log("[AIContentIdeasPage] handleSchedule called:", {
-      idea: idea.title,
-      hasCaption: !!caption,
-      hasMedia: !!mediaUrl,
-      publishingSession,
-    });
-
     sessionStorage.setItem(PUBLISHING_SESSION_KEY, JSON.stringify(publishingSession));
-    console.log("[AIContentIdeasPage] Session stored in sessionStorage, navigating to scheduler");
     navigate({ to: "/dashboard/scheduler" });
   };
 
@@ -151,18 +152,15 @@ export function AIContentIdeasPage() {
 
     try {
       const publicUrl = await uploadPostMedia(file);
-      setMediaUrls(prev => ({ ...prev, [index]: publicUrl }));
-      console.log("[AIContentIdeasPage] Media uploaded successfully:", publicUrl);
+      setMediaUrls((prev) => ({ ...prev, [index]: publicUrl }));
       toast.success("Media uploaded successfully");
     } catch (error) {
-      console.error("[AIContentIdeasPage] Media upload failed:", error);
       toast.error(error instanceof Error ? error.message : "Media upload failed");
     }
   };
 
   const handleGenerateAIImage = async (index: number) => {
     toast.info("AI image generation coming soon");
-    // TODO: Implement AI image generation
   };
 
   return (
@@ -279,7 +277,7 @@ export function AIContentIdeasPage() {
                   <div>
                     <Label className="text-sm font-medium">Visual Concept</Label>
                     <div className="text-sm mt-1 text-muted-foreground">
-                      {typeof idea.visualConcept === 'string' ? (
+                      {typeof idea.visualConcept === "string" ? (
                         <p>{idea.visualConcept}</p>
                       ) : (
                         <div className="space-y-2">
@@ -323,9 +321,9 @@ export function AIContentIdeasPage() {
                     <div className="space-y-2 pt-2 border-t border-border/60">
                       <Label className="text-sm font-medium">Uploaded Media</Label>
                       <div className="relative rounded-lg overflow-hidden">
-                        <img 
-                          src={mediaUrls[index]} 
-                          alt="Uploaded media" 
+                        <img
+                          src={mediaUrls[index]}
+                          alt="Uploaded media"
                           className="w-full h-48 object-cover"
                         />
                       </div>
@@ -335,11 +333,7 @@ export function AIContentIdeasPage() {
                   <div className="space-y-2 pt-2 border-t border-border/60">
                     <Label className="text-sm font-medium">Media</Label>
                     <div className="grid grid-cols-2 gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleMediaUpload(index)}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => handleMediaUpload(index)}>
                         <Upload className="size-4 mr-2" />
                         Upload Media
                       </Button>
@@ -354,7 +348,9 @@ export function AIContentIdeasPage() {
                     </div>
                     <input
                       type="file"
-                      ref={(el) => { fileInputRefs.current[index] = el; }}
+                      ref={(el) => {
+                        fileInputRefs.current[index] = el;
+                      }}
                       className="hidden"
                       accept="image/*"
                       onChange={(e) => handleFileChange(index, e)}
@@ -366,9 +362,7 @@ export function AIContentIdeasPage() {
                       size="sm"
                       variant="outline"
                       className="flex-1"
-                      onClick={() =>
-                        generateCaptionMutation.mutate({ idea, index })
-                      }
+                      onClick={() => generateCaptionMutation.mutate({ idea, index })}
                       disabled={generateCaptionMutation.isPending}
                     >
                       {generateCaptionMutation.isPending ? (

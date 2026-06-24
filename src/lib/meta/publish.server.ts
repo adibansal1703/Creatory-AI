@@ -1,8 +1,5 @@
 import { getMetaConfig } from "@/lib/meta/config.server";
-import {
-  buildInstagramCaption,
-  resolvePublicMediaUrl,
-} from "@/lib/publishing/content-summary";
+import { buildInstagramCaption, resolvePublicMediaUrl } from "@/lib/publishing/content-summary";
 import type { ContentPayload } from "@/lib/types/database";
 
 type GraphErrorBody = {
@@ -59,7 +56,9 @@ export async function publishInstagramPost(input: {
 }): Promise<string> {
   const imageUrl = resolvePublicMediaUrl(input.contentPayload.instagram?.media_url);
   if (!imageUrl) {
-    throw new Error("Instagram posts require a publicly accessible image URL. Upload an image first.");
+    throw new Error(
+      "Instagram posts require a publicly accessible image URL. Upload an image first.",
+    );
   }
 
   const caption = buildInstagramCaption(input.contentPayload);

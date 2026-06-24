@@ -88,8 +88,6 @@ export function PublishingWizard() {
 
   const validateContent = (): boolean => {
     const payload = getPayload();
-    console.log("[PublishingWizard] validateContent - payload:", JSON.stringify(payload, null, 2));
-    
     const hasContent = selected.some((p) => summarizeContent(p, payload).trim().length > 0);
     if (!hasContent) {
       toast.error("Add content for at least one selected platform.");
@@ -98,20 +96,16 @@ export function PublishingWizard() {
 
     if (selected.includes("instagram")) {
       const mediaUrl = payload.instagram?.media_url;
-      console.log("[PublishingWizard] validateContent - Instagram media_url:", mediaUrl);
-      
       if (!mediaUrl) {
         toast.error("No image selected. Instagram posts require an image.");
         return false;
       }
-      
+
       const resolvedUrl = resolvePublicMediaUrl(mediaUrl);
       if (!resolvedUrl) {
         toast.error(`Invalid image URL format: "${mediaUrl}". Please upload a valid image.`);
         return false;
       }
-      
-      console.log("[PublishingWizard] validateContent - Instagram image URL validated:", resolvedUrl);
     }
 
     return true;
@@ -123,11 +117,9 @@ export function PublishingWizard() {
     setUploadingMediaFor(platform);
     try {
       const publicUrl = await uploadPostMedia(file);
-      console.log("[PublishingWizard] Media uploaded successfully for", platform, "URL:", publicUrl);
       setField(`${platform}_media`, publicUrl);
       toast.success("Media uploaded.");
     } catch (error) {
-      console.error("[PublishingWizard] Media upload failed for", platform, error);
       toast.error(error instanceof Error ? error.message : "Media upload failed.");
     } finally {
       setUploadingMediaFor(null);
@@ -156,13 +148,11 @@ export function PublishingWizard() {
   const handleSchedule = () => {
     if (!validateContent()) return;
     const payload = getPayload();
-    console.log("[PublishingWizard] handleSchedule - payload:", JSON.stringify(payload, null, 2));
     const session: PublishingSession = {
       platforms: selected,
       contentPayload: payload,
     };
     sessionStorage.setItem(PUBLISHING_SESSION_KEY, JSON.stringify(session));
-    console.log("[PublishingWizard] Session stored in sessionStorage");
     setShowAction(false);
     navigate({ to: "/dashboard/scheduler" });
   };
@@ -182,7 +172,11 @@ export function PublishingWizard() {
           <h2 className="font-semibold">Select platforms</h2>
           <p className="text-sm text-muted-foreground">
             Select where this post should go. Connect accounts in{" "}
-            <Link to="/dashboard/accounts" className="text-primary underline" search={{ reason: undefined, instagram: undefined }}>
+            <Link
+              to="/dashboard/accounts"
+              className="text-primary underline"
+              search={{ reason: undefined, instagram: undefined }}
+            >
               Connected Accounts
             </Link>{" "}
             to publish immediately.
@@ -200,10 +194,7 @@ export function PublishingWizard() {
                       : "border-border hover:border-primary/50"
                   }`}
                 >
-                  <Checkbox
-                    checked={checked}
-                    onCheckedChange={() => togglePlatform(platform)}
-                  />
+                  <Checkbox checked={checked} onCheckedChange={() => togglePlatform(platform)} />
                   <div className="flex flex-col gap-1">
                     <PlatformBadge platform={platform} />
                     <span className="text-xs text-muted-foreground">
@@ -214,10 +205,7 @@ export function PublishingWizard() {
               );
             })}
           </div>
-          <Button
-            disabled={selected.length === 0}
-            onClick={continueToContent}
-          >
+          <Button disabled={selected.length === 0} onClick={continueToContent}>
             Continue
           </Button>
         </div>
@@ -348,9 +336,17 @@ export function PublishingWizard() {
               </div>
               {!isPlatformConnected(platform) && (
                 <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-                  <p>Please connect your account before creating content for {PLATFORM_LABELS[platform]}.</p>
+                  <p>
+                    Please connect your account before creating content for{" "}
+                    {PLATFORM_LABELS[platform]}.
+                  </p>
                   <Button variant="outline" size="sm" className="mt-3" asChild>
-                    <Link to="/dashboard/accounts" search={{ reason: undefined, instagram: undefined }}>Connect account</Link>
+                    <Link
+                      to="/dashboard/accounts"
+                      search={{ reason: undefined, instagram: undefined }}
+                    >
+                      Connect account
+                    </Link>
                   </Button>
                 </div>
               )}
@@ -360,9 +356,7 @@ export function PublishingWizard() {
             <Button variant="outline" onClick={() => setStep(1)}>
               Back
             </Button>
-            <Button onClick={continueToAction}>
-              Continue
-            </Button>
+            <Button onClick={continueToAction}>Continue</Button>
             <Button
               variant="outline"
               disabled={selected.length === 0 || saveDraftMutation.isPending}

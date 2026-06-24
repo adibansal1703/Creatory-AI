@@ -58,16 +58,6 @@ export function buildInstagramAuthorizeUrl(input: { state: string }): string {
 
   const url = `${path}?${params.toString()}`;
 
-  console.log("[Instagram OAuth] buildInstagramAuthorizeUrl — complete URL:", url);
-  console.log("[Instagram OAuth] buildInstagramAuthorizeUrl — breakdown:", {
-    path,
-    client_id: config.appId,
-    redirect_uri: config.redirectUri,
-    scope: INSTAGRAM_SCOPES,
-    response_type: "code",
-    state: input.state,
-  });
-
   return url;
 }
 
@@ -172,24 +162,12 @@ export async function fetchInstagramBusinessAccounts(
   const ownedPages = await fetchFacebookPages(userAccessToken, "me/accounts");
   let connections = mapPagesToInstagramConnections(ownedPages, userAccessToken);
 
-  console.log("[Instagram OAuth] /me/accounts:", {
-    pageCount: ownedPages.length,
-    pagesWithInstagram: connections.length,
-    pageNames: ownedPages.map((page) => page.name),
-  });
-
   if (connections.length > 0) {
     return connections;
   }
 
   const assignedPages = await fetchFacebookPages(userAccessToken, "me/assigned_pages");
   connections = mapPagesToInstagramConnections(assignedPages, userAccessToken);
-
-  console.log("[Instagram OAuth] /me/assigned_pages:", {
-    pageCount: assignedPages.length,
-    pagesWithInstagram: connections.length,
-    pageNames: assignedPages.map((page) => page.name),
-  });
 
   if (connections.length > 0) {
     return connections;
@@ -228,7 +206,9 @@ export async function validateInstagramAccessToken(input: {
   }
 }
 
-export async function completeInstagramOAuthFlow(code: string): Promise<InstagramAccountConnection> {
+export async function completeInstagramOAuthFlow(
+  code: string,
+): Promise<InstagramAccountConnection> {
   const shortLived = await exchangeCodeForShortLivedToken(code);
   const longLived = await exchangeForLongLivedUserToken(shortLived.access_token);
   const tokenExpiresAt = tokenExpiresAtFromResponse(longLived);

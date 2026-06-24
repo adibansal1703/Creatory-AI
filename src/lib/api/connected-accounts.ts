@@ -89,17 +89,6 @@ export async function startInstagramOAuth(): Promise<void> {
   const accessToken = await requireAccessToken();
   const { url } = await getInstagramOAuthUrl({ data: { accessToken } });
 
-  const parsed = new URL(url);
-  console.log("[Instagram OAuth] Redirecting to complete URL:", url);
-  console.log("[Instagram OAuth] Redirect breakdown:", {
-    path: `${parsed.origin}${parsed.pathname}`,
-    client_id: parsed.searchParams.get("client_id"),
-    redirect_uri: parsed.searchParams.get("redirect_uri"),
-    scope: parsed.searchParams.get("scope"),
-    response_type: parsed.searchParams.get("response_type"),
-    state: parsed.searchParams.get("state"),
-  });
-
   window.location.assign(url);
 }
 

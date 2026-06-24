@@ -154,7 +154,10 @@ async function run() {
       sentCount += 1;
       console.log(`Sent notification ${notification.id} to ${profile.email}.`);
     } catch (error) {
-      console.error(`Failed to send notification ${notification.id}:`, error instanceof Error ? error.message : error);
+      console.error(
+        `Failed to send notification ${notification.id}:`,
+        error instanceof Error ? error.message : error,
+      );
     }
   }
 

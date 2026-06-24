@@ -18,9 +18,14 @@ export function EmptyState({ icon, title, description, action, className }: Empt
         {icon}
       </div>
       <p className="mt-4 font-medium">{title}</p>
-      <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">{description}</p>
+      <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
+        {description}
+      </p>
       {action && (
-        <Button className="mt-6 bg-gradient-brand border-0 hover:opacity-90" asChild={Boolean(action.to)}>
+        <Button
+          className="mt-6 bg-gradient-brand border-0 hover:opacity-90"
+          asChild={Boolean(action.to)}
+        >
           {action.to ? (
             <Link to={action.to}>{action.label}</Link>
           ) : (

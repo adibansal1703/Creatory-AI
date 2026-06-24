@@ -82,8 +82,8 @@ export function SettingsPage() {
       toast.success("Email update requested — check your inbox to confirm.");
       await enqueueNotification("email_changed", { email: newEmail });
       setCurrentPassword("");
-    } catch (e: any) {
-      toast.error(e.message ?? String(e));
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : String(e));
     }
   }
 
@@ -98,8 +98,8 @@ export function SettingsPage() {
       await enqueueNotification("password_changed", {});
       setCurrentPassword("");
       setNewPassword("");
-    } catch (e: any) {
-      toast.error(e.message ?? String(e));
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : String(e));
     }
   }
 
@@ -108,19 +108,22 @@ export function SettingsPage() {
     setUploading(true);
     try {
       const filePath = `avatars/${user.id}/${file.name}`;
-      const {
-        error: uploadErr,
-      } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
+      const { error: uploadErr } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
       if (uploadErr) throw uploadErr;
 
       const { data: urlData } = await supabase.storage.from("avatars").getPublicUrl(filePath);
       const publicUrl = urlData.publicUrl;
 
-      const { error: updErr } = await supabase.from("profiles").update({ avatar_url: publicUrl, updated_at: new Date().toISOString() }).eq("id", user.id);
+      const { error: updErr } = await supabase
+        .from("profiles")
+        .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
+        .eq("id", user.id);
       if (updErr) throw updErr;
       toast.success("Profile picture uploaded.");
-    } catch (e: any) {
-      toast.error(e.message ?? String(e));
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : String(e));
     } finally {
       setUploading(false);
     }
@@ -132,8 +135,8 @@ export function SettingsPage() {
       const { data, error } = await supabase.rpc("request_account_deletion");
       if (error) throw error;
       toast.success("Account deletion requested — check your email to confirm.");
-    } catch (e: any) {
-      toast.error(e.message ?? String(e));
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : String(e));
     }
   }
 
@@ -193,18 +196,23 @@ export function SettingsPage() {
             </SelectContent>
           </Select>
         </div>
-        <Button
-          disabled={saveMutation.isPending || loading}
-          onClick={() => saveMutation.mutate()}
-        >
+        <Button disabled={saveMutation.isPending || loading} onClick={() => saveMutation.mutate()}>
           {saveMutation.isPending ? "Saving…" : "Save changes"}
         </Button>
         <div className="border-t pt-4 mt-4 space-y-4">
           <div>
             <Label>Change password</Label>
-            <Input type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+            <Input
+              type="password"
+              placeholder="New password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
             <div className="flex gap-2 mt-2">
-              <Button onClick={() => handleChangePassword()} disabled={!newPassword || !currentPassword}>
+              <Button
+                onClick={() => handleChangePassword()}
+                disabled={!newPassword || !currentPassword}
+              >
                 Change password
               </Button>
             </div>
@@ -212,20 +220,39 @@ export function SettingsPage() {
 
           <div>
             <Label>Profile picture</Label>
-            <input ref={fileRef} type="file" accept="image/*" onChange={(e) => handleUploadAvatar(e.target.files?.[0])} />
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleUploadAvatar(e.target.files?.[0])}
+            />
             <div className="flex gap-2 mt-2">
-              <Button onClick={() => fileRef.current?.click()} disabled={uploading}>{uploading ? 'Uploading…' : 'Upload picture'}</Button>
+              <Button onClick={() => fileRef.current?.click()} disabled={uploading}>
+                {uploading ? "Uploading…" : "Upload picture"}
+              </Button>
             </div>
           </div>
 
           <div>
             <Label>Delete account</Label>
-            <p className="text-sm text-muted-foreground">Request permanent deletion — you will receive a confirmation email.</p>
+            <p className="text-sm text-muted-foreground">
+              Request permanent deletion — you will receive a confirmation email.
+            </p>
             <div className="flex gap-2 mt-2">
-              <Button variant="destructive" onClick={() => {
-                if (!confirm('Are you sure you want to request account deletion? This will send a confirmation email.')) return;
-                handleRequestAccountDeletion();
-              }}>Request account deletion</Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  if (
+                    !confirm(
+                      "Are you sure you want to request account deletion? This will send a confirmation email.",
+                    )
+                  )
+                    return;
+                  handleRequestAccountDeletion();
+                }}
+              >
+                Request account deletion
+              </Button>
             </div>
           </div>
         </div>

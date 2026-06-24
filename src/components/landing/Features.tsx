@@ -2,8 +2,16 @@ import { motion } from "motion/react";
 import { Calendar, Globe2 } from "lucide-react";
 
 const features = [
-  { icon: Globe2, title: "Multi-platform publishing", desc: "Instagram, LinkedIn, X, YouTube, Facebook — one composer, one click." },
-  { icon: Calendar, title: "Smart scheduler", desc: "Drag-and-drop calendar, queues, bulk uploads, timezone-aware publishing." },
+  {
+    icon: Globe2,
+    title: "Multi-platform publishing",
+    desc: "Instagram, LinkedIn, X, YouTube, Facebook — one composer, one click.",
+  },
+  {
+    icon: Calendar,
+    title: "Smart scheduler",
+    desc: "Drag-and-drop calendar, queues, bulk uploads, timezone-aware publishing.",
+  },
 ];
 
 export function Features() {
@@ -16,7 +24,8 @@ export function Features() {
             One platform. <span className="text-gradient">Every workflow.</span>
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Stop juggling 7 tools. Creatory AI replaces your scheduler, analytics suite, trend tracker and copywriter — with intelligent agents that learn your brand.
+            Stop juggling 7 tools. Creatory AI replaces your scheduler, analytics suite, trend
+            tracker and copywriter — with intelligent agents that learn your brand.
           </p>
         </div>
 

@@ -25,10 +25,7 @@ export function UserAccountMenu({ className, compact = false }: UserAccountMenuP
 
   if (loading) {
     return (
-      <div
-        className={cn("h-9 w-28 rounded-lg bg-muted/40 animate-pulse", className)}
-        aria-hidden
-      />
+      <div className={cn("h-9 w-28 rounded-lg bg-muted/40 animate-pulse", className)} aria-hidden />
     );
   }
 

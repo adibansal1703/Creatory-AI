@@ -11,7 +11,6 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-
       <div className="relative w-full">
         <div className="mx-auto max-w-7xl px-6 md:px-12 lg:px-16">
           <motion.div

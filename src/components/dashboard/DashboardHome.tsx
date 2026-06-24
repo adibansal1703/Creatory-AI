@@ -90,12 +90,8 @@ export function DashboardHome() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">
-          Welcome back, {displayName}
-        </h1>
-        <p className="mt-1 text-muted-foreground">
-          {user?.email} — here is your content overview
-        </p>
+        <h1 className="text-3xl font-semibold tracking-tight">Welcome back, {displayName}</h1>
+        <p className="mt-1 text-muted-foreground">{user?.email} — here is your content overview</p>
       </div>
 
       {noAccounts && (
@@ -146,17 +142,22 @@ export function DashboardHome() {
               <AlertCircle className="size-4" /> Could not load scheduled posts
             </p>
           )}
-          {!recentScheduled.isLoading && !recentScheduled.isError && recentScheduled.data?.length === 0 && (
-            <p className="text-sm text-muted-foreground">
-              No scheduled posts yet.{" "}
-              <Link to="/dashboard/publishing" className="text-primary underline">
-                Create and schedule your first post
-              </Link>
-            </p>
-          )}
+          {!recentScheduled.isLoading &&
+            !recentScheduled.isError &&
+            recentScheduled.data?.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                No scheduled posts yet.{" "}
+                <Link to="/dashboard/publishing" className="text-primary underline">
+                  Create and schedule your first post
+                </Link>
+              </p>
+            )}
           <ul className="space-y-3">
             {recentScheduled.data?.map((post) => (
-              <li key={post.id} className="rounded-sm bg-secondary/50 p-4 space-y-2 border border-border">
+              <li
+                key={post.id}
+                className="rounded-sm bg-secondary/50 p-4 space-y-2 border border-border"
+              >
                 <div className="flex flex-wrap items-center gap-2">
                   <PlatformBadge platform={post.platform} />
                   <StatusBadge status={post.status} />
@@ -189,7 +190,10 @@ export function DashboardHome() {
           )}
           <ul className="space-y-3">
             {recentPublished.data?.map((post) => (
-              <li key={post.id} className="rounded-sm bg-secondary/50 p-4 space-y-2 border border-border">
+              <li
+                key={post.id}
+                className="rounded-sm bg-secondary/50 p-4 space-y-2 border border-border"
+              >
                 <PlatformBadge platform={post.platform} />
                 <p className="text-sm line-clamp-2 leading-relaxed">{post.content}</p>
                 <p className="text-xs text-muted-foreground">

@@ -36,10 +36,6 @@ export const completeInstagramOAuth = createServerFn({ method: "POST" })
     await verifyOAuthState(data.state, user.id);
 
     const connection = await completeInstagramOAuthFlow(data.code);
-    console.log("[Instagram OAuth] Account discovered:", {
-      accountName: connection.accountName,
-      externalAccountId: connection.externalAccountId,
-    });
 
     const admin = getSupabaseAdmin();
 
@@ -63,11 +59,9 @@ export const completeInstagramOAuth = createServerFn({ method: "POST" })
       .single();
 
     if (error) {
-      console.error("[Instagram OAuth] Failed to save connected account:", error.message);
       throw new Error(error.message);
     }
 
-    console.log("[Instagram OAuth] Connected account saved:", saved.id);
     return saved;
   });
 
@@ -100,7 +94,8 @@ export const validateInstagramConnections = createServerFn({ method: "POST" })
 
     for (const account of accounts ?? []) {
       const expired =
-        account.token_expires_at != null && new Date(account.token_expires_at).getTime() <= Date.now();
+        account.token_expires_at != null &&
+        new Date(account.token_expires_at).getTime() <= Date.now();
 
       if (!account.external_account_id || !account.access_token) {
         statuses.push({

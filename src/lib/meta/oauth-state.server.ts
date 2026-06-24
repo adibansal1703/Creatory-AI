@@ -79,7 +79,9 @@ export async function verifyOAuthState(state: string, userId: string): Promise<v
     throw new Error("Invalid OAuth state signature.");
   }
 
-  const payload = JSON.parse(new TextDecoder().decode(base64UrlDecode(encodedPayload))) as OAuthStatePayload;
+  const payload = JSON.parse(
+    new TextDecoder().decode(base64UrlDecode(encodedPayload)),
+  ) as OAuthStatePayload;
 
   if (payload.userId !== userId) {
     throw new Error("OAuth state does not match the current user.");

@@ -14,15 +14,13 @@ export async function uploadPostMedia(file: File): Promise<string> {
     throw new Error("Instagram publishing currently supports image uploads only.");
   }
 
-  const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+  const safeName = file.name.replace(/[^\w.-]+/g, "_");
   const filePath = `${user.id}/${Date.now()}-${safeName}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from("post-media")
-    .upload(filePath, file, {
-      upsert: false,
-      contentType: file.type,
-    });
+  const { error: uploadError } = await supabase.storage.from("post-media").upload(filePath, file, {
+    upsert: false,
+    contentType: file.type,
+  });
 
   if (uploadError) {
     throw new Error(uploadError.message);

@@ -14,10 +14,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { getDefaultScheduleValues, minScheduleDateString } from "@/lib/scheduled-post-utils";
 import { PLATFORM_LABELS, PLATFORMS, type PostPlatform } from "@/lib/types/database";
-import {
-  postScheduleSchema,
-  type PostScheduleFormValues,
-} from "@/lib/validations/post-schedule";
+import { postScheduleSchema, type PostScheduleFormValues } from "@/lib/validations/post-schedule";
 
 type PostScheduleFormProps = {
   defaultValues?: Partial<PostScheduleFormValues>;
@@ -60,7 +57,9 @@ export function PostScheduleForm({
         <Label>Platform</Label>
         <Select
           value={platform}
-          onValueChange={(value) => setValue("platform", value as PostPlatform, { shouldValidate: true })}
+          onValueChange={(value) =>
+            setValue("platform", value as PostPlatform, { shouldValidate: true })
+          }
         >
           <SelectTrigger>
             <SelectValue placeholder="Select platform" />
@@ -73,9 +72,7 @@ export function PostScheduleForm({
             ))}
           </SelectContent>
         </Select>
-        {errors.platform && (
-          <p className="text-xs text-destructive">{errors.platform.message}</p>
-        )}
+        {errors.platform && <p className="text-xs text-destructive">{errors.platform.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -115,11 +112,7 @@ export function PostScheduleForm({
         </div>
         <div className="space-y-2">
           <Label htmlFor="scheduleTime">Schedule time</Label>
-          <Input
-            id="scheduleTime"
-            type="time"
-            {...register("scheduleTime")}
-          />
+          <Input id="scheduleTime" type="time" {...register("scheduleTime")} />
           {errors.scheduleTime && (
             <p className="text-xs text-destructive">{errors.scheduleTime.message}</p>
           )}
@@ -127,10 +120,7 @@ export function PostScheduleForm({
       </div>
 
       <div className="flex flex-wrap gap-3 pt-2">
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-        >
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? (
             <>
               <Loader2 className="size-4 animate-spin" />

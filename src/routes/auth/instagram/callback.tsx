@@ -27,8 +27,7 @@ function InstagramCallbackPage() {
       const searchParams = new URLSearchParams(window.location.search);
       const code = searchParams.get("code");
       const state = searchParams.get("state");
-      const oauthError =
-        searchParams.get("error_description") ?? searchParams.get("error");
+      const oauthError = searchParams.get("error_description") ?? searchParams.get("error");
 
       if (oauthError) {
         if (mounted) setError(oauthError);

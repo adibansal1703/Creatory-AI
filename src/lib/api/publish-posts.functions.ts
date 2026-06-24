@@ -35,10 +35,7 @@ async function getConnectedAccount(userId: string, platform: PostPlatform) {
     throw new Error(`Connect your ${platform} account before publishing.`);
   }
 
-  if (
-    data.token_expires_at != null &&
-    new Date(data.token_expires_at).getTime() <= Date.now()
-  ) {
+  if (data.token_expires_at != null && new Date(data.token_expires_at).getTime() <= Date.now()) {
     throw new Error(`Your ${platform} access token has expired. Reconnect the account.`);
   }
 

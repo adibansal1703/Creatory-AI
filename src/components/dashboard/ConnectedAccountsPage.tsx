@@ -5,7 +5,13 @@ import { Loader2, Plus, Unlink } from "lucide-react";
 import { PlatformBadge } from "@/components/dashboard/PlatformBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,11 +24,7 @@ import {
   startInstagramOAuth,
   validateInstagramConnectionStatuses,
 } from "@/lib/api/connected-accounts";
-import {
-  PLATFORMS,
-  PLATFORM_LABELS,
-  type PostPlatform,
-} from "@/lib/types/database";
+import { PLATFORMS, PLATFORM_LABELS, type PostPlatform } from "@/lib/types/database";
 
 export function ConnectedAccountsPage() {
   const queryClient = useQueryClient();
@@ -30,7 +32,12 @@ export function ConnectedAccountsPage() {
   const [accountName, setAccountName] = useState("");
   const [startingInstagramOAuth, setStartingInstagramOAuth] = useState(false);
 
-  const { data: accounts, isLoading, isError, refetch } = useQuery({
+  const {
+    data: accounts,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["connected-accounts"],
     queryFn: fetchConnectedAccounts,
   });
@@ -112,7 +119,10 @@ export function ConnectedAccountsPage() {
 
       {isError && (
         <div className="rounded-lg p-4 text-sm text-destructive border border-destructive/30 bg-card shadow-subtle">
-          Failed to load accounts. <button className="underline" onClick={() => refetch()}>Retry</button>
+          Failed to load accounts.{" "}
+          <button className="underline" onClick={() => refetch()}>
+            Retry
+          </button>
         </div>
       )}
 
@@ -182,9 +192,12 @@ export function ConnectedAccountsPage() {
                             <p className="text-xs text-muted-foreground">
                               Status: {getConnectionStatusLabel(account)}
                             </p>
-                            {platform === "instagram" && validation && !validation.valid && validation.error && (
-                              <p className="text-xs text-destructive">{validation.error}</p>
-                            )}
+                            {platform === "instagram" &&
+                              validation &&
+                              !validation.valid &&
+                              validation.error && (
+                                <p className="text-xs text-destructive">{validation.error}</p>
+                              )}
                           </div>
                           <Button
                             variant="outline"
@@ -201,8 +214,7 @@ export function ConnectedAccountsPage() {
                           <p>Account ID: {account.external_account_id ?? "—"}</p>
                           {platform === "instagram" && account.token_expires_at && (
                             <p>
-                              Token expires:{" "}
-                              {new Date(account.token_expires_at).toLocaleString()}
+                              Token expires: {new Date(account.token_expires_at).toLocaleString()}
                               {isInstagramTokenExpired(account) ? " (expired)" : ""}
                             </p>
                           )}
@@ -221,7 +233,9 @@ export function ConnectedAccountsPage() {
       <Dialog open={connecting !== null} onOpenChange={(open) => !open && setConnecting(null)}>
         <DialogContent className="bg-card border-border shadow-medium max-w-lg">
           <DialogHeader>
-            <DialogTitle>Connect {connecting ? PLATFORM_LABELS[connecting] : "account"}</DialogTitle>
+            <DialogTitle>
+              Connect {connecting ? PLATFORM_LABELS[connecting] : "account"}
+            </DialogTitle>
             <DialogDescription>
               Add a profile name for this platform. OAuth support for this platform is coming soon.
             </DialogDescription>

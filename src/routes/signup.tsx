@@ -192,9 +192,9 @@ function SignupPage() {
             Resend verification email
           </Button>
           <p className="text-xs text-muted-foreground">
-            Open the verification link in <strong className="text-foreground">this same browser</strong>{" "}
-            (where you signed up). Then you&apos;ll reach the dashboard, or log in if the link opened
-            elsewhere.
+            Open the verification link in{" "}
+            <strong className="text-foreground">this same browser</strong> (where you signed up).
+            Then you&apos;ll reach the dashboard, or log in if the link opened elsewhere.
           </p>
           <Link
             to="/login"

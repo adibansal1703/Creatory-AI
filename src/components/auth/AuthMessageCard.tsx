@@ -11,11 +11,7 @@ type AuthMessageCardProps = {
 export function AuthMessageCard({ variant, email }: AuthMessageCardProps) {
   if (variant === "verify-email") {
     return (
-      <AuthLayout
-        title="Check your email"
-        subtitle="Verification email sent"
-        footer={null}
-      >
+      <AuthLayout title="Check your email" subtitle="Verification email sent" footer={null}>
         <div className="text-center space-y-4">
           <MailCheck className="mx-auto size-12 text-primary" />
           <p className="text-sm text-muted-foreground leading-relaxed">

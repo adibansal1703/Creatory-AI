@@ -36,5 +36,7 @@ export function getSupabaseAnonKey(): string {
 }
 
 export function isClientEnvConfigured(): boolean {
-  return Boolean(readClientEnv("APP_URL") && readClientEnv("SUPABASE_URL") && readClientEnv("SUPABASE_ANON_KEY"));
+  return Boolean(
+    readClientEnv("APP_URL") && readClientEnv("SUPABASE_URL") && readClientEnv("SUPABASE_ANON_KEY"),
+  );
 }

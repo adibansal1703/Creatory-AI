@@ -9,13 +9,13 @@ Open **SQL Editor** in Supabase Dashboard → paste → Run.
 
 ## Tables
 
-| Table | Purpose |
-|-------|---------|
-| `profiles` | User profile + timezone |
-| `connected_accounts` | Social platform connections |
-| `drafts` | Saved composer drafts |
-| `scheduled_posts` | Posts waiting to publish |
-| `published_posts` | Published content history |
+| Table                | Purpose                         |
+| -------------------- | ------------------------------- |
+| `profiles`           | User profile + timezone         |
+| `connected_accounts` | Social platform connections     |
+| `drafts`             | Saved composer drafts           |
+| `scheduled_posts`    | Posts waiting to publish        |
+| `published_posts`    | Published content history       |
 | `notification_queue` | Email jobs for the email worker |
 
 ## Auth settings

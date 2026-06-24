@@ -40,7 +40,10 @@ export function buildContentPayload(
 export function buildInstagramCaption(payload: ContentPayload): string {
   const ig = payload.instagram;
   if (!ig) return "";
-  return [ig.caption, ig.hashtags, ig.location, ig.tagged_accounts].filter(Boolean).join("\n\n").trim();
+  return [ig.caption, ig.hashtags, ig.location, ig.tagged_accounts]
+    .filter(Boolean)
+    .join("\n\n")
+    .trim();
 }
 
 export function resolvePublicMediaUrl(mediaUrl: string | null | undefined): string | null {
